@@ -1,31 +1,30 @@
 package com.bertan.budgetplanner.mapper;
 
 import com.bertan.budgetplanner.domain.Category;
-import com.bertan.budgetplanner.dto.CategoryDTO;
-import com.bertan.budgetplanner.dto.CreateCategoryDTO;
+import com.bertan.budgetplanner.dto.CategoryResponseDTO;
+import com.bertan.budgetplanner.dto.CreateCategoryRequestDTO;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class CategoryMapper {
 
-    public CategoryDTO toDto(Category category) {
-        CategoryDTO dto = new CategoryDTO(category.getId(), category.getName(), category.getType());
-        return dto;
+    public CategoryResponseDTO toDto(Category category) {
+        return new CategoryResponseDTO(category.getId(), category.getName(), category.getType());
     }
 
-    public Category toEntity(CreateCategoryDTO dto) {
+    public Category toEntity(CreateCategoryRequestDTO dto) {
         Category category = new Category();
-        category.getName();
-        category.getType();
+        category.setName(dto.name());
+        category.setType(dto.type());
         return category;
     }
 
-    public List<CategoryDTO> toDtoList(List<Category> categories) {
-        return categories.stream().map(this::toDto).toList();
-    }
-
-    public List<CreateCategoryDTO> toCreateDtoList(List<Category> categories) {
-        return categories.stream().map(category -> new CreateCategoryDTO(category.getName(), category.getType())).toList();
+    public List<CategoryResponseDTO> toDtoList(List<Category> categories) {
+        return categories.stream()
+                .map(this::toDto)
+                .toList();
     }
 
 }

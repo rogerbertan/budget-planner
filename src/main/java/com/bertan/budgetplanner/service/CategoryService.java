@@ -1,11 +1,14 @@
 package com.bertan.budgetplanner.service;
 
-import com.bertan.budgetplanner.dto.CategoryDTO;
+import com.bertan.budgetplanner.dto.CategoryResponseDTO;
+import com.bertan.budgetplanner.dto.CreateCategoryRequestDTO;
 
 import java.util.List;
 
 
 public interface CategoryService {
 
-    List<CategoryDTO> findAll();
+    List<CategoryResponseDTO> findAll();
+
+    CategoryResponseDTO createCategory(CreateCategoryRequestDTO requestDTO);
 }

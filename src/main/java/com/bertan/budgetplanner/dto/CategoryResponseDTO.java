@@ -2,7 +2,8 @@ package com.bertan.budgetplanner.dto;
 
 import com.bertan.budgetplanner.domain.Type;
 
-public record CreateCategoryDTO(
+public record CategoryResponseDTO(
+    Long id,
     String name,
     Type type
 ) {

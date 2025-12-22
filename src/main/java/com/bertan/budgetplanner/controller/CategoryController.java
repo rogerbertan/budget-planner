@@ -1,11 +1,12 @@
 package com.bertan.budgetplanner.controller;
 
-import com.bertan.budgetplanner.dto.CategoryDTO;
+import com.bertan.budgetplanner.dto.CategoryResponseDTO;
+import com.bertan.budgetplanner.dto.CreateCategoryRequestDTO;
 import com.bertan.budgetplanner.service.CategoryService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,8 +21,13 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CategoryDTO>> getAllCategories() {
+    public ResponseEntity<List<CategoryResponseDTO>> getAllCategories() {
         return ResponseEntity.ok(categoryService.findAll());
     }
 
+    @PostMapping
+    public ResponseEntity<CategoryResponseDTO> createCategory(@Valid @RequestBody CreateCategoryRequestDTO requestDTO) {
+        CategoryResponseDTO created = categoryService.createCategory(requestDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
 }
