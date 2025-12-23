@@ -10,21 +10,28 @@ import java.util.Objects;
 @Entity
 @Table(name = "transactions")
 public class Transaction {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private Type type;
+
     @Column(nullable = false, precision = 19, scale = 4)
     private BigDecimal amount;
+
     @Column(nullable = false, length = 100)
     private String description;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
+
     @Column(name = "transaction_date", nullable = false)
     private LocalDate transactionDate;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
