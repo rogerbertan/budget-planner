@@ -50,4 +50,15 @@ public class CategoryServiceImpl implements CategoryService {
         category.setType(requestDTO.type());
         return categoryMapper.toDto(category);
     }
+
+    @Override
+    @Transactional
+    public void deleteCategory(Long id) {
+
+        if (!categoryRepository.existsById(id)) {
+            throw new IllegalArgumentException("Category not found with id: " + id);
+        }
+
+        categoryRepository.deleteById(id);
+    }
 }
