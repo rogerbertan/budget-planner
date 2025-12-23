@@ -3,7 +3,6 @@ package com.bertan.budgetplanner.controller;
 import com.bertan.budgetplanner.dto.CategoryResponseDTO;
 import com.bertan.budgetplanner.dto.CreateCategoryRequestDTO;
 import com.bertan.budgetplanner.service.CategoryService;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +27,7 @@ public class CategoryController {
 
     @PostMapping
     public ResponseEntity<CategoryResponseDTO> createCategory(
-            @Valid @RequestBody CreateCategoryRequestDTO requestDTO) {
+            @RequestBody CreateCategoryRequestDTO requestDTO) {
 
         CategoryResponseDTO created = categoryService.createCategory(requestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
@@ -37,7 +36,7 @@ public class CategoryController {
     @PutMapping("/{id}")
     public ResponseEntity<CategoryResponseDTO> updateCategory(
             @PathVariable Long id,
-            @Valid @RequestBody CreateCategoryRequestDTO requestDTO) {
+            @RequestBody CreateCategoryRequestDTO requestDTO) {
 
         CategoryResponseDTO updated = categoryService.updateCategory(id, requestDTO);
         return ResponseEntity.ok(updated);
