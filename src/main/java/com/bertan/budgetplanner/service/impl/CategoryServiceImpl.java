@@ -33,8 +33,21 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public CategoryResponseDTO createCategory(CreateCategoryRequestDTO requestDTO) {
+
         Category category = categoryMapper.toEntity(requestDTO);
         Category saved = categoryRepository.save(category);
         return categoryMapper.toDto(saved);
+    }
+
+    @Override
+    @Transactional
+    public CategoryResponseDTO updateCategory(Long id, CreateCategoryRequestDTO requestDTO) {
+
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + id));
+
+        category.setName(requestDTO.name());
+        category.setType(requestDTO.type());
+        return categoryMapper.toDto(category);
     }
 }
