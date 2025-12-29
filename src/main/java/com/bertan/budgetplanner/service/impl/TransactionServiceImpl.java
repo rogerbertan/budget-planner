@@ -58,4 +58,23 @@ public class TransactionServiceImpl implements TransactionService {
 
         return transactionMapper.toDto(transaction);
     }
+
+    @Override
+    public TransactionResponseDTO updateTransaction(Long id, CreateTransactionRequestDTO requestDTO) {
+
+        Transaction existing = transactionRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Transaction not found with id: " + id));
+
+        Category category = categoryRepository.findById(requestDTO.categoryId())
+                .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + requestDTO.categoryId()));
+
+        existing.setType(requestDTO.type());
+        existing.setAmount(requestDTO.amount());
+        existing.setDescription(requestDTO.description());
+        existing.setTransactionDate(requestDTO.transactionDate());
+        existing.setCategory(category);
+
+        Transaction updated = transactionRepository.save(existing);
+        return transactionMapper.toDto(updated);
+    }
 }

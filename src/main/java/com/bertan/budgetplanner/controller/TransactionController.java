@@ -44,4 +44,13 @@ public class TransactionController {
         TransactionResponseDTO created = transactionService.createTransaction(requestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<TransactionResponseDTO> updateTransaction(
+            @PathVariable Long id,
+            @RequestBody CreateTransactionRequestDTO requestDTO) {
+
+        TransactionResponseDTO updated = transactionService.updateTransaction(id, requestDTO);
+        return ResponseEntity.ok(updated);
+    }
 }

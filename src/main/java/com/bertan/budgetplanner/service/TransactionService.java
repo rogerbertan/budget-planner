@@ -13,4 +13,6 @@ public interface TransactionService {
     TransactionResponseDTO createTransaction(CreateTransactionRequestDTO requestDTO);
 
     TransactionResponseDTO getTransactionById(Long id);
+
+    TransactionResponseDTO updateTransaction(Long id, CreateTransactionRequestDTO requestDTO);
 }
