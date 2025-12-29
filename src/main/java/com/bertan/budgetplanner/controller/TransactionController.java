@@ -1,15 +1,15 @@
 package com.bertan.budgetplanner.controller;
 
+import com.bertan.budgetplanner.dto.CreateTransactionRequestDTO;
 import com.bertan.budgetplanner.dto.TransactionResponseDTO;
 import com.bertan.budgetplanner.service.TransactionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -24,7 +24,17 @@ public class TransactionController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<TransactionResponseDTO>> getAllTransactions(@PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+    public ResponseEntity<Page<TransactionResponseDTO>> getAllTransactions(
+            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+
         return ResponseEntity.ok(transactionService.findAll(pageable));
+    }
+
+    @PostMapping
+    public ResponseEntity<TransactionResponseDTO> createTransaction(
+            @RequestBody CreateTransactionRequestDTO requestDTO) {
+
+        TransactionResponseDTO created = transactionService.createTransaction(requestDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 }
