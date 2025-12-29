@@ -49,4 +49,13 @@ public class TransactionServiceImpl implements TransactionService {
         Transaction saved = transactionRepository.save(created);
         return transactionMapper.toDto(saved);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public TransactionResponseDTO getTransactionById(Long id) {
+        Transaction transaction = transactionRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Transaction not found with id: " + id));
+
+        return transactionMapper.toDto(transaction);
+    }
 }

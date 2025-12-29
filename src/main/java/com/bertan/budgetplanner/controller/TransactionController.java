@@ -30,6 +30,13 @@ public class TransactionController {
         return ResponseEntity.ok(transactionService.findAll(pageable));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<TransactionResponseDTO> getTransactionById(
+            @PathVariable Long id) {
+
+        return ResponseEntity.ok(transactionService.getTransactionById(id));
+    }
+
     @PostMapping
     public ResponseEntity<TransactionResponseDTO> createTransaction(
             @RequestBody CreateTransactionRequestDTO requestDTO) {

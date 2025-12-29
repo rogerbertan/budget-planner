@@ -11,4 +11,6 @@ public interface TransactionService {
     Page<TransactionResponseDTO> findAll(Pageable pageable);
 
     TransactionResponseDTO createTransaction(CreateTransactionRequestDTO requestDTO);
+
+    TransactionResponseDTO getTransactionById(Long id);
 }
