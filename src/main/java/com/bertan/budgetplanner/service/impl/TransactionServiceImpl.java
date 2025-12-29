@@ -77,4 +77,13 @@ public class TransactionServiceImpl implements TransactionService {
         Transaction updated = transactionRepository.save(existing);
         return transactionMapper.toDto(updated);
     }
+
+    @Override
+    public void deleteTransaction(Long id) {
+
+        Transaction existing = transactionRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Transaction not found with id: " + id));
+
+        transactionRepository.delete(existing);
+    }
 }

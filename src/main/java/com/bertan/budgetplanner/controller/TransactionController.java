@@ -53,4 +53,12 @@ public class TransactionController {
         TransactionResponseDTO updated = transactionService.updateTransaction(id, requestDTO);
         return ResponseEntity.ok(updated);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTransaction(
+            @PathVariable Long id) {
+
+        transactionService.deleteTransaction(id);
+        return ResponseEntity.noContent().build();
+    }
 }
