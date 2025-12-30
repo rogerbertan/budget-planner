@@ -23,4 +23,8 @@ public interface TransactionService {
     BigDecimal getTotalIncome();
 
     BigDecimal getTotalExpense();
+
+    BigDecimal getMonthlyIncome(int month, int year);
+
+    BigDecimal getMonthlyExpense(int month, int year);
 }

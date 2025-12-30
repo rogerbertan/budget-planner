@@ -101,4 +101,16 @@ public class TransactionServiceImpl implements TransactionService {
 
         return transactionRepository.sumAmountByType(Type.EXPENSE);
     }
+
+    @Override
+    public BigDecimal getMonthlyIncome(int month, int year) {
+
+        return transactionRepository.sumAmountByMonthAndYearAndType(month, year, Type.INCOME);
+    }
+
+    @Override
+    public BigDecimal getMonthlyExpense(int month, int year) {
+
+        return transactionRepository.sumAmountByMonthAndYearAndType(month, year, Type.EXPENSE);
+    }
 }
