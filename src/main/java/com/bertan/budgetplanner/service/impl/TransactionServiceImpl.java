@@ -3,6 +3,7 @@ package com.bertan.budgetplanner.service.impl;
 import com.bertan.budgetplanner.domain.Category;
 import com.bertan.budgetplanner.domain.Transaction;
 import com.bertan.budgetplanner.domain.Type;
+import com.bertan.budgetplanner.dto.CategoriesSummaryResponseDTO;
 import com.bertan.budgetplanner.dto.CreateTransactionRequestDTO;
 import com.bertan.budgetplanner.dto.TransactionResponseDTO;
 import com.bertan.budgetplanner.mapper.TransactionMapper;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
@@ -112,5 +114,11 @@ public class TransactionServiceImpl implements TransactionService {
     public BigDecimal getMonthlyExpense(int month, int year) {
 
         return transactionRepository.sumAmountByMonthAndYearAndType(month, year, Type.EXPENSE);
+    }
+
+    @Override
+    public List<CategoriesSummaryResponseDTO> getCategoriesSummaries(int month, int year) {
+
+        return transactionRepository.findCategorySummariesByMonthAndYear(month, year);
     }
 }

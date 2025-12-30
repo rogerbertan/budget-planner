@@ -1,6 +1,7 @@
 package com.bertan.budgetplanner.controller;
 
 import com.bertan.budgetplanner.dto.BalanceResponseDTO;
+import com.bertan.budgetplanner.dto.CategoriesSummaryResponseDTO;
 import com.bertan.budgetplanner.dto.MonthlySummaryResponseDTO;
 import com.bertan.budgetplanner.service.SummaryService;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/summary")
@@ -34,5 +36,14 @@ public class SummaryController {
 
         MonthlySummaryResponseDTO monthlySummary = summaryService.getMonthlySummary(month, year);
         return ResponseEntity.ok(monthlySummary);
+    }
+
+    @GetMapping("/categories")
+    public ResponseEntity<List<CategoriesSummaryResponseDTO>> getCategoriesSummary(
+            @RequestParam("month") int month,
+            @RequestParam("year") int year) {
+
+        List<CategoriesSummaryResponseDTO> categoriesSummary = summaryService.getCategoriesSummary(month, year);
+        return ResponseEntity.ok(categoriesSummary);
     }
 }
