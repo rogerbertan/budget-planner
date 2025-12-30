@@ -2,6 +2,7 @@ package com.bertan.budgetplanner.service.impl;
 
 import com.bertan.budgetplanner.domain.Category;
 import com.bertan.budgetplanner.domain.Transaction;
+import com.bertan.budgetplanner.domain.Type;
 import com.bertan.budgetplanner.dto.CreateTransactionRequestDTO;
 import com.bertan.budgetplanner.dto.TransactionResponseDTO;
 import com.bertan.budgetplanner.mapper.TransactionMapper;
@@ -12,6 +13,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
@@ -85,5 +88,17 @@ public class TransactionServiceImpl implements TransactionService {
                 .orElseThrow(() -> new IllegalArgumentException("Transaction not found with id: " + id));
 
         transactionRepository.delete(existing);
+    }
+
+    @Override
+    public BigDecimal getTotalIncome() {
+
+        return transactionRepository.sumAmountByType(Type.INCOME);
+    }
+
+    @Override
+    public BigDecimal getTotalExpense() {
+
+        return transactionRepository.sumAmountByType(Type.EXPENSE);
     }
 }
