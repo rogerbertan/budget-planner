@@ -53,7 +53,7 @@ Before running the project, make sure you have the following installed:
 Clone the project repository:
 
 ```bash
-git clone https://github.com/yourusername/budgetplanner.git
+git clone https://github.com/rogerbertan/budget-planner.git
 cd budgetplanner
 ```
 
@@ -97,9 +97,9 @@ The API will be available at `http://localhost:8080`
 
 <h3 id="get-health">Health Check</h3>
 
-| route               | description
-|----------------------|-----------------------------------------------------
-| <kbd>GET /health</kbd>     | Check if the API is running
+| route                  | description                 |
+|------------------------|-----------------------------|
+| <kbd>GET /health</kbd> | Check if the API is running |
 
 **RESPONSE**
 ```json
@@ -110,12 +110,12 @@ The API will be available at `http://localhost:8080`
 
 <h3 id="categories">Categories</h3>
 
-| route               | description
-|----------------------|-----------------------------------------------------
-| <kbd>GET /categories</kbd>     | Retrieve all categories
-| <kbd>POST /categories</kbd>     | Create a new category
-| <kbd>PUT /categories/{id}</kbd>     | Update a category
-| <kbd>DELETE /categories/{id}</kbd>     | Delete a category
+| route                              | description             |
+|------------------------------------|-------------------------|
+| <kbd>GET /categories</kbd>         | Retrieve all categories |
+| <kbd>POST /categories</kbd>        | Create a new category   |
+| <kbd>PUT /categories/{id}</kbd>    | Update a category       |
+| <kbd>DELETE /categories/{id}</kbd> | Delete a category       |
 
 **POST /categories - REQUEST**
 ```json
@@ -136,13 +136,13 @@ The API will be available at `http://localhost:8080`
 
 <h3 id="transactions">Transactions</h3>
 
-| route               | description
-|----------------------|-----------------------------------------------------
-| <kbd>GET /transactions</kbd>     | Retrieve all transactions (paginated, sorted by creation date)
-| <kbd>GET /transactions/{id}</kbd>     | Retrieve a specific transaction
-| <kbd>POST /transactions</kbd>     | Create a new transaction
-| <kbd>PUT /transactions/{id}</kbd>     | Update a transaction
-| <kbd>DELETE /transactions/{id}</kbd>     | Delete a transaction
+| route                                | description                                                    |
+|--------------------------------------|----------------------------------------------------------------|
+| <kbd>GET /transactions</kbd>         | Retrieve all transactions (paginated, sorted by creation date) |
+| <kbd>GET /transactions/{id}</kbd>    | Retrieve a specific transaction                                |
+| <kbd>POST /transactions</kbd>        | Create a new transaction                                       |
+| <kbd>PUT /transactions/{id}</kbd>    | Update a transaction                                           |
+| <kbd>DELETE /transactions/{id}</kbd> | Delete a transaction                                           |
 
 **POST /transactions - REQUEST**
 ```json
@@ -193,11 +193,11 @@ The API will be available at `http://localhost:8080`
 
 <h3 id="summary">Summary</h3>
 
-| route               | description
-|----------------------|-----------------------------------------------------
-| <kbd>GET /summary/balance</kbd>     | Get overall balance summary
-| <kbd>GET /summary/monthly?month={month}&year={year}</kbd>     | Get monthly summary for a specific month
-| <kbd>GET /summary/categories?month={month}&year={year}</kbd>     | Get summary grouped by categories
+| route                                                        | description                              |
+|--------------------------------------------------------------|------------------------------------------|
+| <kbd>GET /summary/balance</kbd>                              | Get overall balance summary              |
+| <kbd>GET /summary/monthly?month={month}&year={year}</kbd>    | Get monthly summary for a specific month |
+| <kbd>GET /summary/categories?month={month}&year={year}</kbd> | Get summary grouped by categories        |
 
 **GET /summary/balance - RESPONSE**
 ```json
@@ -236,23 +236,6 @@ The API will be available at `http://localhost:8080`
   }
 ]
 ```
-
-<h2 id="colab">Collaborators</h2>
-
-Special thank you for all people that contributed for this project.
-
-<table>
-  <tr>
-    <td align="center">
-      <a href="#">
-        <img src="https://github.com/rogerbertan.png" width="100px;" alt="Your Name"/><br>
-        <sub>
-          <b>Roger Bertan</b>
-        </sub>
-      </a>
-    </td>
-  </tr>
-</table>
 
 <h2 id="contribute">Contribute</h2>
 
