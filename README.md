@@ -1,101 +1,119 @@
-[JAVA_BADGE]:https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white
-[SPRING_BADGE]: https://img.shields.io/badge/spring-%236DB33F.svg?style=for-the-badge&logo=spring&logoColor=white
-[POSTGRES_BADGE]:https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white
-[FLYWAY_BADGE]:https://img.shields.io/badge/Flyway-CC0200?style=for-the-badge&logo=flyway&logoColor=white
-[MAVEN_BADGE]:https://img.shields.io/badge/Apache%20Maven-C71A36?style=for-the-badge&logo=Apache%20Maven&logoColor=white
+<!-- Improved compatibility of back to top link -->
+<a id="readme-top"></a>
 
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <h3 align="center">Budget Planner</h3>
 
-<h1 align="center" style="font-weight: bold;">Budget Planner</h1>
+  <p align="center">
+    A REST API for managing personal finances with categories, transactions, and financial summaries.
+    <br />
+    <a href="https://github.com/rogerbertan/budget-planner/issues/new?labels=bug">Report Bug</a>
+    ·
+    <a href="https://github.com/rogerbertan/budget-planner/issues/new?labels=enhancement">Request Feature</a>
+  </p>
+</div>
 
-![java][JAVA_BADGE]
-![spring][SPRING_BADGE]
-![postgres][POSTGRES_BADGE]
-![flyway][FLYWAY_BADGE]
-![maven][MAVEN_BADGE]
-
-<details open="open">
-<summary>Table of Contents</summary>
-
-- [Getting started](#started)
-  - [Prerequisites](#prerequisites)
-  - [Cloning](#cloning)
-  - [Environment Variables](#environment-variables)
-  - [Starting](#starting)
-- [API Endpoints](#routes)
-  - [Health Check](#get-health)
-  - [Categories](#categories)
-  - [Transactions](#transactions)
-  - [Summary](#summary)
-- [Collaborators](#colab)
-- [Contribute](#contribute)
-
+<!-- TABLE OF CONTENTS -->
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+      <ul>
+        <li><a href="#built-with">Built With</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#installation">Installation</a></li>
+      </ul>
+    </li>
+    <li><a href="#usage">Usage</a></li>
+    <li><a href="#contributing">Contributing</a></li>
+  </ol>
 </details>
 
-<p align="center">
-  <b>A REST API for managing personal finances with categories, transactions, and financial summaries.</b>
-</p>
+<!-- ABOUT THE PROJECT -->
+## About The Project
 
-<h2 id="started">Getting started</h2>
+Budget Planner is a Spring Boot application that helps you track your income and expenses, categorize transactions, and get financial summaries. It provides a comprehensive REST API for managing personal finances with support for:
 
-Budget Planner is a Spring Boot application that helps you track your income and expenses, categorize transactions, and get financial summaries.
+* Transaction tracking with categories
+* Income and expense management
+* Financial summaries and balance calculations
+* Monthly reports and category-based analysis
 
-<h3>Prerequisites</h3>
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+### Built With
+
+* [![Java][Java-badge]][Java-url]
+* [![Spring][Spring-badge]][Spring-url]
+* [![PostgreSQL][PostgreSQL-badge]][PostgreSQL-url]
+* [![Flyway][Flyway-badge]][Flyway-url]
+* [![Maven][Maven-badge]][Maven-url]
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- GETTING STARTED -->
+## Getting Started
+
+To get a local copy up and running follow these simple steps.
+
+### Prerequisites
 
 Before running the project, make sure you have the following installed:
 
-- [Java 21](https://openjdk.org/projects/jdk/21/)
-- [Maven](https://maven.apache.org/)
-- [PostgreSQL](https://www.postgresql.org/)
-- [Git](https://git-scm.com/)
+* [Java 21](https://openjdk.org/projects/jdk/21/)
+* [Maven](https://maven.apache.org/)
+* [PostgreSQL](https://www.postgresql.org/)
+* [Git](https://git-scm.com/)
 
-<h3>Cloning</h3>
+### Installation
 
-Clone the project repository:
+1. Clone the repository
+   ```bash
+   git clone https://github.com/rogerbertan/budget-planner.git
+   cd budgetplanner
+   ```
 
-```bash
-git clone https://github.com/rogerbertan/budget-planner.git
-cd budgetplanner
-```
+2. Set up environment variables (optional - defaults are provided)
+   ```bash
+   export DB_HOST=localhost
+   export DB_NAME=budget-planner
+   export DB_USER=postgres
+   export DB_PASSWORD=postgres
+   ```
 
-<h3>Environment Variables</h2>
+   Alternatively, modify `application.properties`:
+   ```properties
+   spring.datasource.url=jdbc:postgresql://localhost/budget-planner
+   spring.datasource.username=postgres
+   spring.datasource.password=postgres
+   ```
 
-The application uses the following environment variables for database configuration. You can set them in your system or use the default values:
+3. Create the PostgreSQL database
+   ```bash
+   createdb budget-planner
+   ```
 
-```bash
-DB_HOST=localhost
-DB_NAME=budget-planner
-DB_USER=postgres
-DB_PASSWORD=postgres
-```
-
-Alternatively, you can modify the `application.properties` file directly:
-
-```properties
-spring.datasource.url=jdbc:postgresql://localhost/budget-planner
-spring.datasource.username=postgres
-spring.datasource.password=postgres
-```
-
-<h3>Starting</h3>
-
-Create the PostgreSQL database:
-
-```bash
-createdb budget-planner
-```
-
-Run the application using Maven:
-
-```bash
-./mvnw spring-boot:run
-```
+4. Run the application using Maven
+   ```bash
+   ./mvnw spring-boot:run
+   ```
 
 The API will be available at `http://localhost:8080`
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-<h2 id="routes">API Endpoints</h2>
+<!-- USAGE EXAMPLES -->
+## Usage
 
-<h3 id="get-health">Health Check</h3>
+### Health Check
 
 | route                  | description                 |
 |------------------------|-----------------------------|
@@ -108,7 +126,7 @@ The API will be available at `http://localhost:8080`
 }
 ```
 
-<h3 id="categories">Categories</h3>
+### Categories
 
 | route                              | description             |
 |------------------------------------|-------------------------|
@@ -134,7 +152,7 @@ The API will be available at `http://localhost:8080`
 }
 ```
 
-<h3 id="transactions">Transactions</h3>
+### Transactions
 
 | route                                | description                                                    |
 |--------------------------------------|----------------------------------------------------------------|
@@ -191,7 +209,7 @@ The API will be available at `http://localhost:8080`
 }
 ```
 
-<h3 id="summary">Summary</h3>
+### Summary
 
 | route                                                        | description                              |
 |--------------------------------------------------------------|------------------------------------------|
@@ -237,17 +255,42 @@ The API will be available at `http://localhost:8080`
 ]
 ```
 
-<h2 id="contribute">Contribute</h2>
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-Contributions are welcome! Here's how you can contribute to this project:
+<!-- CONTRIBUTING -->
+## Contributing
 
-1. `git clone https://github.com/rogerbertan/budget-planner.git`
-2. `git checkout -b feature/NAME`
-3. Follow commit patterns
-4. Open a Pull Request explaining the problem solved or feature made, if exists, append screenshot of visual modifications and wait for the review!
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
-<h3>Documentations that might help</h3>
+If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
+Don't forget to give the project a star! Thanks again!
 
-[How to create a Pull Request](https://www.atlassian.com/br/git/tutorials/making-a-pull-request)
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-[Commit pattern](https://gist.github.com/joshbuchea/6f47e86d2510bce28f8e7f42ae84c716)
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- MARKDOWN LINKS & IMAGES -->
+[contributors-shield]: https://img.shields.io/github/contributors/rogerbertan/budget-planner.svg?style=for-the-badge
+[contributors-url]: https://github.com/rogerbertan/budget-planner/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/rogerbertan/budget-planner.svg?style=for-the-badge
+[forks-url]: https://github.com/rogerbertan/budget-planner/network/members
+[stars-shield]: https://img.shields.io/github/stars/rogerbertan/budget-planner.svg?style=for-the-badge
+[stars-url]: https://github.com/rogerbertan/budget-planner/stargazers
+[issues-shield]: https://img.shields.io/github/issues/rogerbertan/budget-planner.svg?style=for-the-badge
+[issues-url]: https://github.com/rogerbertan/budget-planner/issues
+[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
+[linkedin-url]: https://linkedin.com/in/rogerbertan
+[Java-badge]: https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white
+[Java-url]: https://openjdk.org/
+[Spring-badge]: https://img.shields.io/badge/spring-%236DB33F.svg?style=for-the-badge&logo=spring&logoColor=white
+[Spring-url]: https://spring.io/
+[PostgreSQL-badge]: https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white
+[PostgreSQL-url]: https://www.postgresql.org/
+[Flyway-badge]: https://img.shields.io/badge/Flyway-CC0200?style=for-the-badge&logo=flyway&logoColor=white
+[Flyway-url]: https://flywaydb.org/
+[Maven-badge]: https://img.shields.io/badge/Apache%20Maven-C71A36?style=for-the-badge&logo=Apache%20Maven&logoColor=white
+[Maven-url]: https://maven.apache.org/
