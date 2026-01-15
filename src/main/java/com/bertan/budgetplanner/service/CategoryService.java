@@ -1,18 +1,59 @@
 package com.bertan.budgetplanner.service;
 
+import com.bertan.budgetplanner.domain.Category;
 import com.bertan.budgetplanner.dto.CategoryResponseDTO;
 import com.bertan.budgetplanner.dto.CreateCategoryRequestDTO;
+import com.bertan.budgetplanner.mapper.CategoryMapper;
+import com.bertan.budgetplanner.repository.CategoryRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Service
+public class CategoryService {
 
-public interface CategoryService {
+    private final CategoryRepository categoryRepository;
+    private final CategoryMapper categoryMapper;
 
-    List<CategoryResponseDTO> findAll();
+    public CategoryService(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
+        this.categoryRepository = categoryRepository;
+        this.categoryMapper = categoryMapper;
+    }
 
-    CategoryResponseDTO createCategory(CreateCategoryRequestDTO requestDTO);
+    @Transactional(readOnly = true)
+    public List<CategoryResponseDTO> findAll() {
 
-    CategoryResponseDTO updateCategory(Long id, CreateCategoryRequestDTO requestDTO);
+        List<Category> categories = categoryRepository.findAll();
+        return categoryMapper.toDtoList(categories);
+    }
 
-    void deleteCategory(Long id);
+    @Transactional
+    public CategoryResponseDTO createCategory(CreateCategoryRequestDTO requestDTO) {
+
+        Category category = categoryMapper.toEntity(requestDTO);
+        Category saved = categoryRepository.save(category);
+        return categoryMapper.toDto(saved);
+    }
+
+    @Transactional
+    public CategoryResponseDTO updateCategory(Long id, CreateCategoryRequestDTO requestDTO) {
+
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + id));
+
+        category.setName(requestDTO.name());
+        category.setType(requestDTO.type());
+        return categoryMapper.toDto(category);
+    }
+
+    @Transactional
+    public void deleteCategory(Long id) {
+
+        if (!categoryRepository.existsById(id)) {
+            throw new IllegalArgumentException("Category not found with id: " + id);
+        }
+
+        categoryRepository.deleteById(id);
+    }
 }
