@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: Budget Planner
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}/${DB_NAME:budget-planner}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+project:
+  version: @project.version@
