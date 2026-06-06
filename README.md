@@ -11,8 +11,6 @@ Uma API REST para registrar receitas e despesas pessoais, com categorias e resum
 - [Como Começar](#como-começar)
 - [Uso](#uso)
 - [Roadmap](#roadmap)
-- [Contribuindo](#contribuindo)
-- [Licença](#licença)
 
 ---
 
@@ -213,23 +211,3 @@ O campo `type` aceita `INCOME` ou `EXPENSE`.
 - [x] Configuração com Docker Compose
 - [ ] Autenticação e suporte a múltiplos usuários
 - [ ] Exportação de transações para CSV
-
-Veja as [issues abertas](https://github.com/rogerbertan/budget-planner/issues) para a lista completa de melhorias propostas.
-
----
-
-## Contribuindo
-
-Contribuições são bem-vindas. Faça um fork do repositório e abra um pull request, ou abra uma issue com a tag `enhancement`.
-
-1. Faça um fork do projeto
-2. Crie sua branch (`git checkout -b feature/MinhaFeature`)
-3. Faça o commit das suas alterações (`git commit -m 'Add MinhaFeature'`)
-4. Envie para a branch (`git push origin feature/MinhaFeature`)
-5. Abra um Pull Request
-
----
-
-## Licença
-
-Distribuído sob a licença MIT. Veja o arquivo `LICENSE` para mais informações.
