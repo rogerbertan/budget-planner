@@ -13,12 +13,18 @@ variable "vpc_cidr_block" {
   description = "CIDR block para a VPC."
 }
 
-variable "cidr_block_private" {
-  default     = "10.0.1.0/24"
-  description = "CIDR block para a sub-rede privada."
+variable "private-subnets" {
+  default = {
+    "us-east-1a" = "10.0.1.0/24"
+    "us-east-1b" = "10.0.3.0/24"
+  }
+  description = "Mapa de sub-redes privadas por zona de disponibilidade."
 }
 
-variable "cidr_block_public" {
-  default     = "10.0.2.0/24"
-  description = "CIDR block para a sub-rede pública."
+variable "public-subnets" {
+  default = {
+    "us-east-1a" = "10.0.2.0/24"
+    "us-east-1b" = "10.0.4.0/24"
+  }
+  description = "Mapa de sub-redes públicas por zona de disponibilidade."
 }
