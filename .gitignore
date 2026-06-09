@@ -34,7 +34,6 @@ build/
 
 .env
 CLAUDE.md
-terraform.tfstate
 terraform.tfstate.*
 .terraform/
 .terraform.lock.hcl
