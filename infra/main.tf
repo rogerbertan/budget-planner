@@ -8,5 +8,9 @@ terraform {
 }
 
 provider "aws" {
-  region = "us-east-1"
+  region = var.aws_region
+}
+
+locals {
+  project_name = "budgetplanner"
 }
