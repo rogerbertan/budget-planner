@@ -17,9 +17,7 @@ resource "aws_internet_gateway" "gw" {
   }
 }
 
-resource "aws_eip" "nat" {
-
-}
+resource "aws_eip" "nat" {}
 
 ### PRIVATE
 
@@ -37,7 +35,7 @@ resource "aws_route_table" "private_rt" {
   vpc_id = aws_vpc.budgetplanner-vpc.id
 
   route {
-    cidr_block = "0.0.0.0/0"
+    cidr_block     = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.public.id
   }
 
@@ -50,6 +48,15 @@ resource "aws_route_table_association" "private" {
   for_each       = aws_subnet.private
   subnet_id      = each.value.id
   route_table_id = aws_route_table.private_rt.id
+}
+
+resource "aws_db_subnet_group" "db_subnet_group" {
+  name       = "${local.project_name}-db-subnet-group"
+  subnet_ids = [aws_subnet.private["us-east-1a"].id, aws_subnet.private["us-east-1b"].id]
+
+  tags = {
+    Name = "${local.project_name}-db-subnet-group"
+  }
 }
 
 ### PUBLIC
