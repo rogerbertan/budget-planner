@@ -22,9 +22,9 @@ resource "aws_eip" "nat" {}
 ### PRIVATE
 
 resource "aws_subnet" "private" {
-  for_each   = var.private-subnets
-  vpc_id     = aws_vpc.budgetplanner-vpc.id
-  cidr_block = each.value
+  for_each          = var.private-subnets
+  vpc_id            = aws_vpc.budgetplanner-vpc.id
+  cidr_block        = each.value
   availability_zone = each.key
 
   tags = {
@@ -66,7 +66,7 @@ resource "aws_subnet" "public" {
   for_each                = var.public-subnets
   vpc_id                  = aws_vpc.budgetplanner-vpc.id
   cidr_block              = each.value
-  availability_zone = each.key
+  availability_zone       = each.key
   map_public_ip_on_launch = true
 
   tags = {
@@ -99,5 +99,50 @@ resource "aws_nat_gateway" "public" {
 
   tags = {
     Name = "${local.project_name}-nat-gw"
+  }
+}
+
+### SECURITY
+
+resource "aws_security_group" "load_balancer" {
+  name        = "${local.project_name}-alb-sg"
+  description = "Security group for load balancer"
+  vpc_id      = aws_vpc.budgetplanner-vpc.id
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${local.project_name}-alb-sg"
+  }
+}
+
+resource "aws_security_group" "ecs" {
+  name        = "${local.project_name}-ecs-sg"
+  description = "Security group for ECS tasks"
+  vpc_id      = aws_vpc.budgetplanner-vpc.id
+
+  ingress {
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
+    security_groups = [aws_security_group.load_balancer.id]
   }
 }
