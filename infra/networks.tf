@@ -25,6 +25,7 @@ resource "aws_subnet" "private" {
   for_each   = var.private-subnets
   vpc_id     = aws_vpc.budgetplanner-vpc.id
   cidr_block = each.value
+  availability_zone = each.key
 
   tags = {
     Name = "${local.project_name}-private-subnet-${each.key}"
@@ -65,6 +66,7 @@ resource "aws_subnet" "public" {
   for_each                = var.public-subnets
   vpc_id                  = aws_vpc.budgetplanner-vpc.id
   cidr_block              = each.value
+  availability_zone = each.key
   map_public_ip_on_launch = true
 
   tags = {
