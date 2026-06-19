@@ -12,11 +12,28 @@ resource "aws_ecs_task_definition" "budgetplanner_task" {
   network_mode             = "awsvpc"
   cpu                      = "512"
   memory                   = "1024"
+  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
   container_definitions = jsonencode(
     [{
       name      = "${local.project_name}-container"
       image     = aws_ecr_repository.budgetplanner-ecr.repository_url
       essential = true
+      environment = [
+        {
+          name  = "DB_URL"
+          value = "jdbc:postgresql://${aws_db_instance.budgetplanner-db.address}:5432/${aws_db_instance.budgetplanner-db.db_name}"
+        }
+      ]
+      secrets = [
+        {
+          name      = "DB_USER"
+          valueFrom = "${aws_db_instance.budgetplanner-db.master_user_secret[0].secret_arn}:username::"
+        },
+        {
+          name      = "DB_PASSWORD"
+          valueFrom = "${aws_db_instance.budgetplanner-db.master_user_secret[0].secret_arn}:password::"
+        }
+      ]
       portMappings = [
         {
           containerPort = 8080
@@ -37,7 +54,12 @@ resource "aws_ecs_service" "budgetplanner_service" {
   cluster         = aws_ecs_cluster.budgetplanner_cluster.id
   task_definition = aws_ecs_task_definition.budgetplanner_task.id
   desired_count   = 2
-  iam_role        = aws_iam_role.ecs_task_execution_role.id
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    subnets         = [for subnet in aws_subnet.private : subnet.id]
+    security_groups = [aws_security_group.ecs.id]
+  }
 
   load_balancer {
     target_group_arn = aws_lb_target_group.budgetplanner-tg.arn
