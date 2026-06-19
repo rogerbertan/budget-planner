@@ -16,7 +16,7 @@ resource "aws_ecs_task_definition" "budgetplanner_task" {
   container_definitions = jsonencode(
     [{
       name      = "${local.project_name}-container"
-      image     = aws_ecr_repository.budgetplanner-ecr.repository_url
+      image     = "${aws_ecr_repository.budgetplanner-ecr.repository_url}:1.0.0"
       essential = true
       environment = [
         {
