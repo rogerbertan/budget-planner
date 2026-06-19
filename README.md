@@ -1,213 +1,73 @@
 # Budget Planner
 
-Uma API REST para registrar receitas e despesas pessoais, com categorias e resumos financeiros.
+API REST para controle de finanças pessoais: registra receitas e despesas, organiza por categoria e mostra resumos (saldo, mensal, por categoria).
 
----
+## Problema que resolve
 
-## Índice
-
-- [Sobre o Projeto](#sobre-o-projeto)
-- [Tecnologias](#tecnologias)
-- [Como Começar](#como-começar)
-- [Uso](#uso)
-- [Roadmap](#roadmap)
-
----
-
-## Sobre o Projeto
-
-O Budget Planner é uma API REST construída com Spring Boot para gerenciar finanças pessoais. Com ele é possível categorizar transações como receita ou despesa, consultar o histórico paginado de transações e obter resumos financeiros - saldo geral, resumo mensal e totais por categoria.
-
-O esquema do banco de dados é versionado com Flyway e o projeto inclui uma configuração Docker Compose para rodar tudo com um único comando.
-
----
+Substitui planilha manual por uma API simples que centraliza transações financeiras e calcula saldo/resumos automaticamente, com histórico paginado e categorização.
 
 ## Tecnologias
 
-- Java 21
-- Spring Boot 4
-- PostgreSQL 16
-- Flyway
-- Docker Compose
-- Maven
+Java 21 · Spring Boot 4 · PostgreSQL 16 · Flyway · Maven · Docker · Terraform (AWS)
 
----
+## Rodando local com Docker Compose
 
-## Como Começar
+```bash
+cp .env.example .env
+# edite .env com as credenciais do banco
+docker compose up --build
+```
 
-### Opção 1 - Docker Compose (recomendado)
+API disponível em `http://localhost:8080`.
 
-**Pré-requisitos:** Docker e Docker Compose
+## Rodando local com Maven (sem Docker)
 
-1. Clone o repositório
+```bash
+createdb budget-planner
+
+export DB_URL=jdbc:postgresql://localhost:5432/budget-planner
+export DB_USER=postgres
+export DB_PASSWORD=postgres
+
+./mvnw spring-boot:run
+```
+
+## Deploy na AWS com Terraform
+
+Infraestrutura: ECR + ECS Fargate + RDS Postgres + ALB, gerenciada em `infra/`.
+
+1. Build e push da imagem para o ECR (crie o repositório antes, se ainda não existir)
    ```bash
-   git clone https://github.com/rogerbertan/budget-planner.git
-   cd budget-planner
+   aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <account-id>.dkr.ecr.us-east-1.amazonaws.com
+   docker build -t budgetplanner-ecr .
+   docker tag budgetplanner-ecr:latest <account-id>.dkr.ecr.us-east-1.amazonaws.com/budgetplanner-ecr:<tag>
+   docker push <account-id>.dkr.ecr.us-east-1.amazonaws.com/budgetplanner-ecr:<tag>
    ```
 
-2. Copie o arquivo de exemplo e preencha os valores
+2. Provisione a infraestrutura
    ```bash
-   cp .env.example .env
+   cd infra
+   terraform init
+   terraform apply -var="image_tag=<tag>"
    ```
 
-   ```env
-   POSTGRES_DB=budget-planner
-   POSTGRES_USER=postgres
-   POSTGRES_PASSWORD=postgres
-   ```
+O estado do Terraform é armazenado em S3 (backend configurado em `infra/backend.tf`). Há também um módulo `infra/bootstrap` para criar esse bucket de estado, caso ainda não exista.
 
-3. Inicie a aplicação e o banco de dados
-   ```bash
-   docker compose up --build
-   ```
+Ao final, a API estará disponível pela URL do output `alb_dns_name`.
 
-### Opção 2 - Maven (local)
+## Endpoints principais
 
-**Pré-requisitos:** Java 21, Maven, PostgreSQL
-
-1. Clone o repositório
-   ```bash
-   git clone https://github.com/rogerbertan/budget-planner.git
-   cd budget-planner
-   ```
-
-2. Crie o banco de dados
-   ```bash
-   createdb budget-planner
-   ```
-
-3. Defina as variáveis de ambiente
-   ```bash
-   export DB_URL=jdbc:postgresql://localhost:5432/budget-planner
-   export DB_USER=postgres
-   export DB_PASSWORD=postgres
-   ```
-
-4. Inicie a aplicação
-   ```bash
-   ./mvnw spring-boot:run
-   ```
-
-A API estará disponível em `http://localhost:8080`.
-
----
-
-## Uso
-
-### Health Check
-
-| Método | Rota      | Descrição                    |
-|--------|-----------|------------------------------|
-| `GET`  | `/health` | Verifica se a API está no ar |
-
-```json
-{ "status": "UP" }
-```
-
----
-
-### Categorias
-
-| Método   | Rota               | Descrição                 |
-|----------|--------------------|---------------------------|
-| `GET`    | `/categories`      | Lista todas as categorias |
-| `POST`   | `/categories`      | Cria uma categoria        |
-| `PUT`    | `/categories/{id}` | Atualiza uma categoria    |
-| `DELETE` | `/categories/{id}` | Remove uma categoria      |
-
-O campo `type` aceita `INCOME` ou `EXPENSE`.
-
-**POST /categories - requisição**
-```json
-{ "name": "Mercado", "type": "EXPENSE" }
-```
-
-**POST /categories - resposta `201`**
-```json
-{ "id": 1, "name": "Mercado", "type": "EXPENSE" }
-```
-
----
-
-### Transações
-
-| Método   | Rota                 | Descrição                                                  |
-|----------|----------------------|------------------------------------------------------------|
-| `GET`    | `/transactions`      | Lista transações (paginado, ordenado por data decrescente) |
-| `GET`    | `/transactions/{id}` | Busca uma transação específica                             |
-| `POST`   | `/transactions`      | Cria uma transação                                         |
-| `PUT`    | `/transactions/{id}` | Atualiza uma transação                                     |
-| `DELETE` | `/transactions/{id}` | Remove uma transação                                       |
-
-**POST /transactions - requisição**
-```json
-{
-  "type": "EXPENSE",
-  "amount": 150.50,
-  "description": "Compras da semana",
-  "categoryId": 1,
-  "transactionDate": "2024-01-15"
-}
-```
-
-**POST /transactions - resposta `201`**
-```json
-{
-  "id": 1,
-  "type": "EXPENSE",
-  "amount": 150.50,
-  "description": "Compras da semana",
-  "categoryId": 1,
-  "transactionDate": "2024-01-15",
-  "createdAt": "2024-01-15T10:30:00"
-}
-```
-
-**GET /transactions - resposta**
-```json
-{
-  "content": [{ "id": 1, "...": "..." }],
-  "pageable": { "pageNumber": 0, "pageSize": 20 },
-  "totalElements": 1,
-  "totalPages": 1
-}
-```
-
----
-
-### Resumos
-
-| Método | Rota                                     | Descrição                                    |
-|--------|------------------------------------------|----------------------------------------------|
-| `GET`  | `/summary/balance`                       | Saldo geral com total de receitas e despesas |
-| `GET`  | `/summary/monthly?month={m}&year={y}`    | Resumo de um mês específico                  |
-| `GET`  | `/summary/categories?month={m}&year={y}` | Totais agrupados por categoria               |
-
-**GET /summary/balance**
-```json
-{ "totalIncome": 5000.00, "totalExpense": 3200.50, "balance": 1799.50 }
-```
-
-**GET /summary/monthly?month=1&year=2024**
-```json
-{ "month": 1, "year": 2024, "totalIncome": 5000.00, "totalExpense": 3200.50, "balance": 1799.50 }
-```
-
-**GET /summary/categories?month=1&year=2024**
-```json
-[
-  { "categoryId": 1, "categoryName": "Mercado",  "type": "EXPENSE", "total": 450.00 },
-  { "categoryId": 2, "categoryName": "Salário",  "type": "INCOME",  "total": 5000.00 }
-]
-```
-
----
+- `GET /health` — status da API
+- `GET/POST/PUT/DELETE /categories` — categorias (tipo `INCOME` ou `EXPENSE`)
+- `GET/POST/PUT/DELETE /transactions` — transações (paginado)
+- `GET /summary/balance` — saldo geral
+- `GET /summary/monthly?month=&year=` — resumo mensal
+- `GET /summary/categories?month=&year=` — totais por categoria
 
 ## Roadmap
 
-- [x] CRUD de categorias
-- [x] CRUD de transações com paginação
-- [x] Resumos financeiros (saldo, mensal e por categoria)
-- [x] Configuração com Docker Compose
-- [ ] Autenticação e suporte a múltiplos usuários
+- [x] CRUD de categorias e transações
+- [x] Resumos financeiros
+- [x] Docker Compose e deploy via Terraform na AWS
+- [ ] Autenticação e múltiplos usuários
 - [ ] Exportação de transações para CSV
