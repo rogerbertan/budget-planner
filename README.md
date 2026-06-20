@@ -36,24 +36,7 @@ export DB_PASSWORD=postgres
 
 Infraestrutura: ECR + ECS Fargate + RDS Postgres + ALB, gerenciada em `infra/`.
 
-1. Build e push da imagem para o ECR (crie o repositório antes, se ainda não existir)
-   ```bash
-   aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <account-id>.dkr.ecr.us-east-1.amazonaws.com
-   docker build -t budgetplanner-ecr .
-   docker tag budgetplanner-ecr:latest <account-id>.dkr.ecr.us-east-1.amazonaws.com/budgetplanner-ecr:<tag>
-   docker push <account-id>.dkr.ecr.us-east-1.amazonaws.com/budgetplanner-ecr:<tag>
-   ```
-
-2. Provisione a infraestrutura
-   ```bash
-   cd infra
-   terraform init
-   terraform apply -var="image_tag=<tag>"
-   ```
-
-O estado do Terraform é armazenado em S3 (backend configurado em `infra/backend.tf`). Há também um módulo `infra/bootstrap` para criar esse bucket de estado, caso ainda não exista.
-
-Ao final, a API estará disponível pela URL do output `alb_dns_name`.
+Guia completo passo a passo na [documentação de Deploy](docs/deploy.md).
 
 ## Endpoints principais
 
