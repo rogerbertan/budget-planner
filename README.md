@@ -38,6 +38,14 @@ Infraestrutura: ECR + ECS Fargate + RDS Postgres + ALB, gerenciada em `infra/`.
 
 Guia completo passo a passo na [documentação de Deploy](docs/deploy.md).
 
+## Decisões Técnicas
+
+### Por que OIDC e não Access Key no CI/CD?
+
+O pipeline de CD autentica na AWS via OIDC em vez de um Access Key fixo guardado como secret. O Access Key, uma vez salvo, fica válido indefinidamente até ser revogado manualmente, então se vazar o risco persiste até alguém notar. O OIDC troca um token temporário emitido pelo GitHub por credenciais da AWS que expiram em minutos, geradas a cada execução, sem nenhum segredo fixo armazenado, além de permitir restringir via trust policy quem pode assumir a IAM Role (ex: só a branch `main` deste repositório).
+
+Resumo: OIDC foi escolhido pela ausência de segredo de longa duração e por restringir o acesso por repositório e branch, sendo também a prática hoje recomendada pela AWS e pelo GitHub.
+
 ## Endpoints principais
 
 - `GET /health` — status da API
