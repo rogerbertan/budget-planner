@@ -97,6 +97,34 @@ resource "aws_iam_policy" "github_oidc_policy" {
           "ecr:PutImage"
         ],
         Resource = aws_ecr_repository.budgetplanner-ecr.arn
+      },
+      {
+        Sid    = "AllowEcsRegisterTaskDefinition",
+        Effect = "Allow",
+        Action = [
+          "ecs:RegisterTaskDefinition"
+        ],
+        Resource = "*"
+      },
+      {
+        Sid    = "AllowEcsDeploy",
+        Effect = "Allow",
+        Action = [
+          "ecs:DescribeTaskDefinition",
+          "ecs:UpdateService"
+        ],
+        Resource = [
+          aws_ecs_task_definition.budgetplanner_task.arn,
+          aws_ecs_service.budgetplanner_service.id
+        ]
+      },
+      {
+        Sid    = "AllowPassRoleForEcsTask",
+        Effect = "Allow",
+        Action = [
+          "iam:PassRole"
+        ],
+        Resource = aws_iam_role.ecs_task_execution_role.arn
       }
     ]
   })
