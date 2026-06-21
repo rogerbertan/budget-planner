@@ -1,6 +1,6 @@
 # Guia de Deploy - Budget Planner
 
-Deploy manual completo na AWS, do zero.
+Deploy na AWS: setup inicial da infraestrutura é manual (via Terraform); build, push da imagem e atualização do serviço ECS são automáticos via CI/CD a cada push em `main`.
 
 ## Pré-requisitos
 
@@ -48,34 +48,13 @@ Isso cria o bucket `tfstate-backend-<account-id>`, referenciado em `infra/backen
 
 ---
 
-## 3. Build e push da imagem para o ECR
-
-O repositório ECR (`budgetplanner-ecr`) é criado pelo próprio Terraform do passo 4. Se ainda não existir, crie-o manualmente antes do primeiro push, ou rode `terraform apply` do passo 4 primeiro e depois volte aqui.
-
-```bash
-ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-ECR_REGISTRY="${ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com"
-TAG=1.0.0
-
-aws ecr get-login-password --region us-east-1 \
-  | docker login --username AWS --password-stdin ${ECR_REGISTRY}
-
-docker build -t budgetplanner-ecr .
-docker tag budgetplanner-ecr:latest ${ECR_REGISTRY}/budgetplanner-ecr:${TAG}
-docker push ${ECR_REGISTRY}/budgetplanner-ecr:${TAG}
-```
-
-> O repositório ECR usa `image_tag_mutability = "IMMUTABLE"` — uma tag já publicada não pode ser sobrescrita. Use uma tag nova a cada novo build (ex: `1.0.1`).
-
----
-
-## 4. Deploy da infraestrutura (`infra/`)
+## 3. Deploy da infraestrutura (`infra/`)
 
 ```bash
 cd infra
 
 terraform init
-terraform apply -var="image_tag=<TAG>"
+terraform apply
 ```
 
 Recursos criados:
@@ -85,18 +64,20 @@ Recursos criados:
 - Application Load Balancer (subnet pública) + Target Group com health check em `/actuator/health`
 - RDS PostgreSQL (`db.t4g.micro`), com senha gerenciada automaticamente via Secrets Manager (`manage_master_user_password`)
 - IAM Role de execução das tasks ECS, com permissão de leitura do secret do RDS
+- IAM OIDC Identity Provider + IAM Role para o GitHub Actions assumir via OIDC, usada pelo pipeline de CI/CD para publicar imagens no ECR e atualizar o serviço ECS
 
-> A tag de imagem usada no deploy é a mesma publicada no passo 3 (`image_tag`, default `1.0.0` em `infra/variables.tf`).
+Na primeira execução, o ECS sobe com a tag definida em `image_tag` (`infra/variables.tf`). A partir daí, cada push em `main` publica uma imagem nova e promove o serviço automaticamente (ver seção [Deploy automático via CI/CD](#deploy-automático-via-cicd)).
 
 ---
 
-## 5. Verificar a aplicação
+## 4. Verificar a aplicação
 
 Ao final do `apply`, o Terraform expõe os outputs:
 
 ```bash
 terraform output alb_dns_name
 terraform output ecr_repository_url
+terraform output github_oidc_role_arn
 ```
 
 Testar o health check pela URL do ALB:
@@ -108,15 +89,21 @@ curl http://${ALB_URL}/actuator/health
 
 ---
 
-## Ordem de deploy resumida
+## Deploy automático via CI/CD
 
-```
-1. ~/.aws/credentials + export AWS_DEFAULT_REGION=us-east-1
-2. infra/bootstrap        (bucket S3 do state, só na primeira vez)
-3. docker build/push       (imagem para o ECR)
-4. infra (terraform apply) (VPC, ECS, ALB, RDS)
-5. curl no alb_dns_name    (verificar health)
-```
+O workflow `.github/workflows/ci-cd.yml` cuida do deploy da aplicação a cada push em `main` (PRs só rodam os testes, sem tocar em AWS). O pipeline tem 3 jobs em sequência:
+
+1. **`build-and-test`** — `mvn verify` (build + testes). Roda em todo push e pull request.
+2. **`build-and-push`** — builda a imagem Docker e publica no ECR, com a tag `${{ github.sha }}` (única por commit, compatível com o repositório `IMMUTABLE`). Autentica na AWS via OIDC, sem nenhuma credencial de longa duração armazenada como secret.
+3. **`deploy`** — busca a task definition atual (`describe-task-definition`), atualiza o campo `image` para a tag publicada no passo anterior, registra uma nova revisão (`register-task-definition`) e atualiza o serviço ECS para usá-la (`update-service`).
+
+Os jobs 2 e 3 só rodam em push direto para `main` (`if: github.event_name == 'push'`), nunca em pull request.
+
+### Autenticação via OIDC
+
+A autenticação usa um IAM OIDC Identity Provider (`infra/github-oidc.tf`) e uma IAM Role (`infra/iam.tf`, recurso `github_oidc_role`) com trust policy restrita ao repositório e à branch `main`. O ARN dessa role é guardado no secret `AWS_GITHUB_OIDC_ROLE_ARN` do repositório no GitHub (Settings → Secrets and variables → Actions), e referenciado no workflow.
+
+A policy de permissões anexada à role (`github_oidc_policy`) cobre apenas o necessário: autenticação e push no ECR, leitura/registro de task definitions do ECS, atualização do serviço ECS e `iam:PassRole` para a role de execução das tasks — escopadas aos recursos específicos deste projeto sempre que a API do ECS/ECR permite.
 
 ---
 
@@ -125,7 +112,8 @@ curl http://${ALB_URL}/actuator/health
 | Problema                                                  | Causa                                                         | Solução                                                                                      |
 |-----------------------------------------------------------|---------------------------------------------------------------|----------------------------------------------------------------------------------------------|
 | `terraform init` falha com erro de bucket inexistente     | Bucket de state ainda não foi criado                          | Rodar `infra/bootstrap` antes (passo 2)                                                      |
-| `docker push` falha com `ImageTagAlreadyExists`           | Repositório ECR é `IMMUTABLE`                                 | Usar uma tag nova e reaplicar com `-var="image_tag=<nova-tag>"`                              |
+| `docker push` falha com `ImageTagAlreadyExists`           | Repositório ECR é `IMMUTABLE`                                 | Não ocorre no fluxo automático (tag é o `github.sha`, sempre único por commit)               |
+| Job `deploy` falha com `AccessDeniedException`            | Falta alguma permissão na policy `github_oidc_policy`         | Verificar a ação/recurso exato no erro e ajustar `infra/iam.tf`                               |
 | Tasks ECS não ficam `RUNNING` / health check falha no ALB | Endpoint `/actuator/health` não responde                      | Validar se a imagem builda corretamente e expõe a porta 8080                                 |
 | ECS não consegue ler `DB_USER`/`DB_PASSWORD`              | Secret do RDS ainda não propagou ou policy não anexada        | Verificar `aws_iam_role_policy_attachment.secret_access_policy_attachment` em `infra/iam.tf` |
 | `terraform apply` trava no NAT Gateway/RDS                | Provisionamento naturalmente lento (alguns minutos)           | Aguardar; RDS e NAT Gateway levam mais tempo que os demais recursos                          |

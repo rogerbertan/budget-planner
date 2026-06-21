@@ -34,7 +34,7 @@ export DB_PASSWORD=postgres
 
 ## Deploy na AWS com Terraform
 
-Infraestrutura: ECR + ECS Fargate + RDS Postgres + ALB, gerenciada em `infra/`.
+Infraestrutura: ECR + ECS Fargate + RDS Postgres + ALB, gerenciada em `infra/`. O setup inicial é feito via Terraform; a partir daí, cada push em `main` aciona o pipeline de CI/CD (`.github/workflows/ci-cd.yml`), que builda, testa, publica a imagem no ECR e atualiza o serviço ECS automaticamente.
 
 Guia completo passo a passo na [documentação de Deploy](docs/deploy.md).
 
