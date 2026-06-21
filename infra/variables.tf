@@ -33,3 +33,7 @@ variable "public-subnets" {
   }
   description = "Mapa de sub-redes públicas por zona de disponibilidade."
 }
+
+variable "github-repo" {
+  default = "rogerbertan/budget-planner"
+}
