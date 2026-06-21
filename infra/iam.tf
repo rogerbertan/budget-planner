@@ -99,24 +99,21 @@ resource "aws_iam_policy" "github_oidc_policy" {
         Resource = aws_ecr_repository.budgetplanner-ecr.arn
       },
       {
-        Sid    = "AllowEcsRegisterTaskDefinition",
+        Sid    = "AllowEcsTaskDefinitionReadWrite",
         Effect = "Allow",
         Action = [
+          "ecs:DescribeTaskDefinition",
           "ecs:RegisterTaskDefinition"
         ],
         Resource = "*"
       },
       {
-        Sid    = "AllowEcsDeploy",
+        Sid    = "AllowEcsUpdateService",
         Effect = "Allow",
         Action = [
-          "ecs:DescribeTaskDefinition",
           "ecs:UpdateService"
         ],
-        Resource = [
-          aws_ecs_task_definition.budgetplanner_task.arn,
-          aws_ecs_service.budgetplanner_service.id
-        ]
+        Resource = aws_ecs_service.budgetplanner_service.id
       },
       {
         Sid    = "AllowPassRoleForEcsTask",
