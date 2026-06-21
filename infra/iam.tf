@@ -90,6 +90,7 @@ resource "aws_iam_policy" "github_oidc_policy" {
         Effect = "Allow",
         Action = [
           "ecr:BatchCheckLayerAvailability",
+          "ecr:BatchGetImage",
           "ecr:InitiateLayerUpload",
           "ecr:UploadLayerPart",
           "ecr:CompleteLayerUpload",
