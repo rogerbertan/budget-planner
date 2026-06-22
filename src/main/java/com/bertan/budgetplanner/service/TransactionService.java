@@ -6,6 +6,7 @@ import com.bertan.budgetplanner.domain.Type;
 import com.bertan.budgetplanner.dto.CategoriesSummaryResponseDTO;
 import com.bertan.budgetplanner.dto.CreateTransactionRequestDTO;
 import com.bertan.budgetplanner.dto.TransactionResponseDTO;
+import com.bertan.budgetplanner.exception.ResourceNotFoundException;
 import com.bertan.budgetplanner.mapper.TransactionMapper;
 import com.bertan.budgetplanner.repository.CategoryRepository;
 import com.bertan.budgetplanner.repository.TransactionRepository;
@@ -43,7 +44,7 @@ public class TransactionService {
     public TransactionResponseDTO createTransaction(CreateTransactionRequestDTO requestDTO) {
 
         Category category = categoryRepository.findById(requestDTO.categoryId())
-                .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + requestDTO.categoryId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Category", requestDTO.categoryId().toString()));
 
         Transaction created = transactionMapper.toEntity(requestDTO);
         created.setCategory(category);
@@ -55,7 +56,7 @@ public class TransactionService {
     @Transactional(readOnly = true)
     public TransactionResponseDTO getTransactionById(Long id) {
         Transaction transaction = transactionRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Transaction not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Transaction", id.toString()));
 
         return transactionMapper.toDto(transaction);
     }
@@ -63,10 +64,10 @@ public class TransactionService {
     public TransactionResponseDTO updateTransaction(Long id, CreateTransactionRequestDTO requestDTO) {
 
         Transaction existing = transactionRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Transaction not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Transaction", id.toString()));
 
         Category category = categoryRepository.findById(requestDTO.categoryId())
-                .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + requestDTO.categoryId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Category", requestDTO.categoryId().toString()));
 
         existing.setType(requestDTO.type());
         existing.setAmount(requestDTO.amount());
@@ -81,7 +82,7 @@ public class TransactionService {
     public void deleteTransaction(Long id) {
 
         Transaction existing = transactionRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Transaction not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Transaction", id.toString()));
 
         transactionRepository.delete(existing);
     }

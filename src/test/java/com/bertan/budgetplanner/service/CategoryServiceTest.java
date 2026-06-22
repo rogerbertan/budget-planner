@@ -4,6 +4,7 @@ import com.bertan.budgetplanner.domain.Category;
 import com.bertan.budgetplanner.domain.Type;
 import com.bertan.budgetplanner.dto.CategoryResponseDTO;
 import com.bertan.budgetplanner.dto.CreateCategoryRequestDTO;
+import com.bertan.budgetplanner.exception.ResourceNotFoundException;
 import com.bertan.budgetplanner.mapper.CategoryMapper;
 import com.bertan.budgetplanner.repository.CategoryRepository;
 import org.junit.jupiter.api.Test;
@@ -99,8 +100,8 @@ class CategoryServiceTest {
         when(categoryRepository.findById(id)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> categoryService.updateCategory(id, request))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Category not found with id: " + id);
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("Category not found: " + id);
     }
 
     @Test
@@ -119,8 +120,8 @@ class CategoryServiceTest {
         when(categoryRepository.existsById(id)).thenReturn(false);
 
         assertThatThrownBy(() -> categoryService.deleteCategory(id))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Category not found with id: " + id);
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("Category not found: " + id);
 
         verify(categoryRepository, never()).deleteById(any());
     }

@@ -3,6 +3,7 @@ package com.bertan.budgetplanner.service;
 import com.bertan.budgetplanner.domain.Category;
 import com.bertan.budgetplanner.dto.CategoryResponseDTO;
 import com.bertan.budgetplanner.dto.CreateCategoryRequestDTO;
+import com.bertan.budgetplanner.exception.ResourceNotFoundException;
 import com.bertan.budgetplanner.mapper.CategoryMapper;
 import com.bertan.budgetplanner.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,7 @@ public class CategoryService {
     public CategoryResponseDTO updateCategory(Long id, CreateCategoryRequestDTO requestDTO) {
 
         Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Category", id.toString()));
 
         category.setName(requestDTO.name());
         category.setType(requestDTO.type());
@@ -51,7 +52,7 @@ public class CategoryService {
     public void deleteCategory(Long id) {
 
         if (!categoryRepository.existsById(id)) {
-            throw new IllegalArgumentException("Category not found with id: " + id);
+            throw new ResourceNotFoundException("Category", id.toString());
         }
 
         categoryRepository.deleteById(id);

@@ -6,6 +6,7 @@ import com.bertan.budgetplanner.domain.Type;
 import com.bertan.budgetplanner.dto.CategoriesSummaryResponseDTO;
 import com.bertan.budgetplanner.dto.CreateTransactionRequestDTO;
 import com.bertan.budgetplanner.dto.TransactionResponseDTO;
+import com.bertan.budgetplanner.exception.ResourceNotFoundException;
 import com.bertan.budgetplanner.mapper.TransactionMapper;
 import com.bertan.budgetplanner.repository.CategoryRepository;
 import com.bertan.budgetplanner.repository.TransactionRepository;
@@ -100,8 +101,8 @@ class TransactionServiceTest {
         when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> transactionService.createTransaction(request))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Category not found with id: " + categoryId);
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("Category not found: " + categoryId);
 
         verify(transactionRepository, never()).save(org.mockito.ArgumentMatchers.any());
     }
@@ -126,8 +127,8 @@ class TransactionServiceTest {
         when(transactionRepository.findById(id)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> transactionService.getTransactionById(id))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Transaction not found with id: " + id);
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("Transaction not found: " + id);
     }
 
     @Test
@@ -164,8 +165,8 @@ class TransactionServiceTest {
         when(transactionRepository.findById(id)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> transactionService.updateTransaction(id, request))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Transaction not found with id: " + id);
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("Transaction not found: " + id);
     }
 
     @Test
@@ -180,8 +181,8 @@ class TransactionServiceTest {
         when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> transactionService.updateTransaction(id, request))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Category not found with id: " + categoryId);
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("Category not found: " + categoryId);
     }
 
     @Test
@@ -202,8 +203,8 @@ class TransactionServiceTest {
         when(transactionRepository.findById(id)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> transactionService.deleteTransaction(id))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Transaction not found with id: " + id);
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("Transaction not found: " + id);
 
         verify(transactionRepository, never()).delete(org.mockito.ArgumentMatchers.any());
     }
