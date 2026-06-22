@@ -38,6 +38,8 @@ Infraestrutura: ECR + ECS Fargate + RDS Postgres + ALB, gerenciada em `infra/`.
 
 Guia completo passo a passo na [documentação de Deploy](docs/deploy.md).
 
+Pipeline de CI/CD (build, deploy da app e plan/apply da infra) documentado em [documentação de Pipelines](docs/ci-cd.md).
+
 ## Decisões Técnicas
 
 ### Por que OIDC e não Access Key no CI/CD?
