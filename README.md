@@ -58,6 +58,17 @@ O pipeline de CD autentica na AWS via OIDC em vez de um Access Key fixo guardado
 
 Resumo: OIDC foi escolhido pela ausência de segredo de longa duração e por restringir o acesso por repositório e branch, sendo também a prática hoje recomendada pela AWS e pelo GitHub.
 
+## Testes
+
+Dois níveis de teste, separados por sufixo (`*Test` vs `*IT`):
+
+- **Unitários** — `domain`, `service` e `mapper` testados isoladamente (JUnit 5 + Mockito), sem subir contexto Spring.
+- **Integração** — `*ControllerIT` sobem o contexto Spring completo (`@SpringBootTest`, porta aleatória) e usam [Testcontainers](https://testcontainers.com/) para provisionar um PostgreSQL real em container a cada execução, eliminando divergência entre teste e banco de produção. As chamadas HTTP aos endpoints são feitas com [REST Assured](https://rest-assured.io/). Cada teste limpa as tabelas (`TRUNCATE ... RESTART IDENTITY CASCADE`) no `@AfterEach` para isolamento entre casos.
+
+Cobertura medida com JaCoCo (`mvn verify`), excluindo pacotes de `dto`, `exception` e `config`:
+
+![Relatório de cobertura JaCoCo](docs/img/tests-report.png)
+
 ## Endpoints principais
 
 - `GET /health`: status da API
