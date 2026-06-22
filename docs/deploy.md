@@ -2,6 +2,10 @@
 
 Deploy na AWS: setup inicial da infraestrutura é manual (via Terraform); build, push da imagem e atualização do serviço ECS são automáticos via CI/CD a cada push em `main`.
 
+## Arquitetura
+
+![Diagrama da infraestrutura AWS](img/infra-aws-diagram.png)
+
 ## Pré-requisitos
 
 ```bash 
