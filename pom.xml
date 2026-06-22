@@ -109,6 +109,13 @@
 						<goals>
 							<goal>report</goal>
 						</goals>
+						<configuration>
+							<excludes>
+								<exclude>com/bertan/budgetplanner/dto/**</exclude>
+								<exclude>com/bertan/budgetplanner/exception/**</exclude>
+								<exclude>com/bertan/budgetplanner/config/**</exclude>
+							</excludes>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
