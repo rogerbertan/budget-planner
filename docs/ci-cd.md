@@ -16,10 +16,10 @@ Trigger: qualquer push ou pull request para `main` que altere arquivos em `infra
 ### Job `apply` (em push/merge na `main`)
 
 1. Autentica na AWS via OIDC.
-2. Baixa o artifact `tfplan` gerado pelo job `plan` (`actions/download-artifact`, com `path: infra`, já que o upload de um único arquivo remove o prefixo `infra/`).
-3. `terraform init` e `terraform apply tfplan`.
+2. `terraform init` e `terraform plan -out=tfplan`.
+3. `terraform apply tfplan`.
 
-Aplicar exatamente o arquivo de plano salvo no PR (em vez de gerar um plano novo no momento do apply) garante que o que foi revisado é, byte a byte, o que é executado, evitando drift entre a aprovação do PR e o merge.
+O job `apply` gera seu próprio plano em vez de reaproveitar o artifact `tfplan` do job `plan`. Isso porque os jobs `plan` (trigger `pull_request`) e `apply` (trigger `push`) acontecem em execuções (*workflow runs*) distintas do GitHub Actions, e artifacts não são compartilhados entre runs diferentes, um push direto na `main` sem PR associado nunca teria um artifact `terraform-plan` para baixar, causando `Artifact not found`. O preço dessa simplicidade é que o plano revisado no comentário do PR não é, byte a byte, o mesmo executado no apply (pode haver drift se algo mudar na AWS entre o merge e a execução do `apply`).
 
 > Este projeto é de estudo, então o pipeline não usa `environment` com approval manual nem `concurrency` group antes do apply. Em um ambiente real, valeria adicionar as duas coisas: um *GitHub Environment* com required reviewers antes do `apply`, e um `concurrency: { group: infra-terraform }` para impedir dois applies simultâneos disputando o lock do state (o backend S3 deste projeto não usa DynamoDB para lock).
 
