@@ -63,7 +63,10 @@ resource "aws_iam_role" "github_oidc_role" {
             "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
           }
           StringLike = {
-            "token.actions.githubusercontent.com:sub" = "repo:${var.github-repo}:ref:refs/heads/main"
+            "token.actions.githubusercontent.com:sub" = [
+              "repo:${var.github-repo}:ref:refs/heads/main",
+              "repo:${var.github-repo}:pull_request"
+            ]
           }
         }
       }
@@ -122,6 +125,23 @@ resource "aws_iam_policy" "github_oidc_policy" {
           "iam:PassRole"
         ],
         Resource = aws_iam_role.ecs_task_execution_role.arn
+      },
+      {
+        Sid    = "AllowTerraformStateBucketAccess",
+        Effect = "Allow",
+        Action = [
+          "s3:ListBucket"
+        ],
+        Resource = "arn:aws:s3:::tfstate-backend-321289102277"
+      },
+      {
+        Sid    = "AllowTerraformStateObjectAccess",
+        Effect = "Allow",
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject"
+        ],
+        Resource = "arn:aws:s3:::tfstate-backend-321289102277/budgetplanner/state/terraform.tfstate"
       }
     ]
   })
