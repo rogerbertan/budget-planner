@@ -37,3 +37,7 @@ variable "public-subnets" {
 variable "github-repo" {
   default = "rogerbertan/budget-planner"
 }
+
+variable "alarm_email" {
+  default = "roger.bertan@gmail.com"
+}
