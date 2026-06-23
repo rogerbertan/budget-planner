@@ -43,3 +43,81 @@ resource "aws_sns_topic_subscription" "alarms_email" {
   protocol  = "email"
   endpoint  = var.alarm_email
 }
+
+### Dashboard centralizando métricas de ECS, ALB e RDS
+
+resource "aws_cloudwatch_dashboard" "budgetplanner" {
+  dashboard_name = "${local.project_name}-dashboard"
+
+  dashboard_body = jsonencode({
+    widgets = [
+      {
+        type   = "metric"
+        x      = 0
+        y      = 0
+        width  = 12
+        height = 6
+        properties = {
+          title  = "ECS - CPU e Memória"
+          region = var.aws_region
+          stat   = "Average"
+          period = 60
+          metrics = [
+            ["AWS/ECS", "CPUUtilization", "ClusterName", aws_ecs_cluster.budgetplanner_cluster.name, "ServiceName", aws_ecs_service.budgetplanner_service.name],
+            ["AWS/ECS", "MemoryUtilization", "ClusterName", aws_ecs_cluster.budgetplanner_cluster.name, "ServiceName", aws_ecs_service.budgetplanner_service.name]
+          ]
+        }
+      },
+      {
+        type   = "metric"
+        x      = 12
+        y      = 0
+        width  = 12
+        height = 6
+        properties = {
+          title  = "ALB - Requisições e Latência"
+          region = var.aws_region
+          period = 60
+          metrics = [
+            ["AWS/ApplicationELB", "RequestCount", "LoadBalancer", aws_lb.application_load_balancer.arn_suffix, { stat = "Sum" }],
+            ["AWS/ApplicationELB", "TargetResponseTime", "LoadBalancer", aws_lb.application_load_balancer.arn_suffix, { stat = "Average", yAxis = "right" }]
+          ]
+        }
+      },
+      {
+        type   = "metric"
+        x      = 0
+        y      = 6
+        width  = 12
+        height = 6
+        properties = {
+          title  = "ALB - Erros 5xx e Hosts Saudáveis"
+          region = var.aws_region
+          period = 60
+          metrics = [
+            ["AWS/ApplicationELB", "HTTPCode_Target_5XX_Count", "LoadBalancer", aws_lb.application_load_balancer.arn_suffix, "TargetGroup", aws_lb_target_group.budgetplanner-tg.arn_suffix, { stat = "Sum" }],
+            ["AWS/ApplicationELB", "HealthyHostCount", "LoadBalancer", aws_lb.application_load_balancer.arn_suffix, "TargetGroup", aws_lb_target_group.budgetplanner-tg.arn_suffix, { stat = "Average", yAxis = "right" }],
+            ["AWS/ApplicationELB", "UnHealthyHostCount", "LoadBalancer", aws_lb.application_load_balancer.arn_suffix, "TargetGroup", aws_lb_target_group.budgetplanner-tg.arn_suffix, { stat = "Average", yAxis = "right" }]
+          ]
+        }
+      },
+      {
+        type   = "metric"
+        x      = 12
+        y      = 6
+        width  = 12
+        height = 6
+        properties = {
+          title  = "RDS - CPU, Conexões e Storage Livre"
+          region = var.aws_region
+          period = 60
+          metrics = [
+            ["AWS/RDS", "CPUUtilization", "DBInstanceIdentifier", aws_db_instance.budgetplanner-db.id, { stat = "Average" }],
+            ["AWS/RDS", "DatabaseConnections", "DBInstanceIdentifier", aws_db_instance.budgetplanner-db.id, { stat = "Average" }],
+            ["AWS/RDS", "FreeStorageSpace", "DBInstanceIdentifier", aws_db_instance.budgetplanner-db.id, { stat = "Average", yAxis = "right" }]
+          ]
+        }
+      }
+    ]
+  })
+}
