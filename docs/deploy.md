@@ -97,9 +97,9 @@ curl http://${ALB_URL}/actuator/health
 
 O workflow `.github/workflows/ci-cd.yml` cuida do deploy da aplicação a cada push em `main` (PRs só rodam os testes, sem tocar em AWS). O pipeline tem 3 jobs em sequência:
 
-1. **`build-and-test`** — `mvn verify` (build + testes). Roda em todo push e pull request.
-2. **`build-and-push`** — builda a imagem Docker e publica no ECR, com a tag `${{ github.sha }}` (única por commit, compatível com o repositório `IMMUTABLE`). Autentica na AWS via OIDC, sem nenhuma credencial de longa duração armazenada como secret.
-3. **`deploy`** — busca a task definition atual (`describe-task-definition`), atualiza o campo `image` para a tag publicada no passo anterior, registra uma nova revisão (`register-task-definition`) e atualiza o serviço ECS para usá-la (`update-service`).
+1. **`build-and-test`**: `mvn verify` (build + testes). Roda em todo push e pull request.
+2. **`build-and-push`**: builda a imagem Docker e publica no ECR, com a tag `${{ github.sha }}` (única por commit, compatível com o repositório `IMMUTABLE`). Autentica na AWS via OIDC, sem nenhuma credencial de longa duração armazenada como secret.
+3. **`deploy`**: busca a task definition atual (`describe-task-definition`), atualiza o campo `image` para a tag publicada no passo anterior, registra uma nova revisão (`register-task-definition`) e atualiza o serviço ECS para usá-la (`update-service`).
 
 Os jobs 2 e 3 só rodam em push direto para `main` (`if: github.event_name == 'push'`), nunca em pull request.
 
@@ -107,7 +107,7 @@ Os jobs 2 e 3 só rodam em push direto para `main` (`if: github.event_name == 'p
 
 A autenticação usa um IAM OIDC Identity Provider (`infra/github-oidc.tf`) e uma IAM Role (`infra/iam.tf`, recurso `github_oidc_role`) com trust policy restrita ao repositório e à branch `main`. O ARN dessa role é guardado no secret `AWS_GITHUB_OIDC_ROLE_ARN` do repositório no GitHub (Settings → Secrets and variables → Actions), e referenciado no workflow.
 
-A policy de permissões anexada à role (`github_oidc_policy`) cobre apenas o necessário: autenticação e push no ECR, leitura/registro de task definitions do ECS, atualização do serviço ECS e `iam:PassRole` para a role de execução das tasks — escopadas aos recursos específicos deste projeto sempre que a API do ECS/ECR permite.
+A policy de permissões anexada à role (`github_oidc_policy`) cobre apenas o necessário: autenticação e push no ECR, leitura/registro de task definitions do ECS, atualização do serviço ECS e `iam:PassRole` para a role de execução das tasks. Essas permissões são escopadas aos recursos específicos deste projeto sempre que a API do ECS/ECR permite.
 
 ---
 

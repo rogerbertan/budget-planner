@@ -41,7 +41,7 @@ Sem essas duas peças, o workflow nem consegue autenticar na AWS, falhando já n
 
 ### Permissões da role assumida via OIDC (`infra/iam.tf`)
 
-A `aws_iam_role.github_oidc_role` só pode ser assumida (`sts:AssumeRoleWithWebIdentity`) quando o claim OIDC `sub` corresponde a `repo:<github-repo>:ref:refs/heads/main` (push na main) ou `repo:<github-repo>:pull_request` (qualquer pull request) — sem isso, o job `plan` (que roda em PRs) não autentica na AWS.
+A `aws_iam_role.github_oidc_role` só pode ser assumida (`sts:AssumeRoleWithWebIdentity`) quando o claim OIDC `sub` corresponde a `repo:<github-repo>:ref:refs/heads/main` (push na main) ou `repo:<github-repo>:pull_request` (qualquer pull request). Sem isso, o job `plan` (que roda em PRs) não autentica na AWS.
 
 A `aws_iam_policy.github_oidc_policy` dá a essa role, além das permissões de ECR/ECS/`iam:PassRole` usadas pelo deploy da aplicação, acesso de leitura/escrita ao objeto do state remoto (`s3:GetObject`, `s3:PutObject`, `s3:ListBucket` no bucket `tfstate-backend-321289102277`), necessário para o `terraform init`/`plan`/`apply` lerem e atualizarem o state. Sem essa permissão, o `terraform init` falha com `403 Forbidden` ao tentar acessar `budgetplanner/state/terraform.tfstate`.
 
