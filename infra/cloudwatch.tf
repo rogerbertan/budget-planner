@@ -44,7 +44,7 @@ resource "aws_sns_topic_subscription" "alarms_email" {
   endpoint  = var.alarm_email
 }
 
-### Dashboard centralizando métricas de ECS, ALB e RDS
+### Dashboard centralizado para ECS, ALB e RDS
 
 resource "aws_cloudwatch_dashboard" "budgetplanner" {
   dashboard_name = "${local.project_name}-dashboard"

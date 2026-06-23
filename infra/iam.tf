@@ -151,3 +151,48 @@ resource "aws_iam_role_policy_attachment" "github_oidc_role_policy_attachment" {
   policy_arn = aws_iam_policy.github_oidc_policy.arn
   role       = aws_iam_role.github_oidc_role.id
 }
+
+resource "aws_iam_role_policy_attachment" "github_oidc_role_ec2_policy_attachment" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2FullAccess"
+  role       = aws_iam_role.github_oidc_role.id
+}
+
+resource "aws_iam_role_policy_attachment" "github_oidc_role_ecs_policy_attachment" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonECS_FullAccess"
+  role       = aws_iam_role.github_oidc_role.id
+}
+
+resource "aws_iam_role_policy_attachment" "github_oidc_role_ecr_policy_attachment" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
+  role       = aws_iam_role.github_oidc_role.id
+}
+
+resource "aws_iam_role_policy_attachment" "github_oidc_role_iam_policy_attachment" {
+  policy_arn = "arn:aws:iam::aws:policy/IAMFullAccess"
+  role       = aws_iam_role.github_oidc_role.id
+}
+
+resource "aws_iam_role_policy_attachment" "github_oidc_role_logs_policy_attachment" {
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
+  role       = aws_iam_role.github_oidc_role.id
+}
+
+resource "aws_iam_role_policy_attachment" "github_oidc_role_sns_policy_attachment" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSNSFullAccess"
+  role       = aws_iam_role.github_oidc_role.id
+}
+
+resource "aws_iam_role_policy_attachment" "github_oidc_role_elb_policy_attachment" {
+  policy_arn = "arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess"
+  role       = aws_iam_role.github_oidc_role.id
+}
+
+resource "aws_iam_role_policy_attachment" "github_oidc_role_cloudwatch_policy_attachment" {
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchFullAccess"
+  role       = aws_iam_role.github_oidc_role.id
+}
+
+resource "aws_iam_role_policy_attachment" "github_oidc_role_rds_policy_attachment" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonRDSFullAccess"
+  role       = aws_iam_role.github_oidc_role.id
+}
