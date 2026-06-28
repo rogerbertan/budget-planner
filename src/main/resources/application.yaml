@@ -6,6 +6,10 @@ spring:
     username: ${DB_USER:postgres}
     password: ${DB_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      max-lifetime: 270000
+      validation-timeout: 5000
+      connection-test-query: SELECT 1
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   flyway:

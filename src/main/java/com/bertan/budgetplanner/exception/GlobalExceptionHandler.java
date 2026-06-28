@@ -10,11 +10,15 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(BudgetPlannerException.class)
     public ResponseEntity<ErrorResponseDTO> handleBudgetPlannerException(
@@ -85,7 +89,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseDTO> handleGenericException(
             Exception ex) {
 
-        //log here to track unexpected exceptions
+        logger.error("Unexpected error processing request", ex);
 
         ErrorResponseDTO errorResponse = new ErrorResponseDTO(
                 "An unexpected error occurred");
