@@ -1,6 +1,6 @@
 package com.bertan.budgetplanner.mapper;
 
-import com.bertan.budgetplanner.domain.Transaction;
+import com.bertan.budgetplanner.domain.transaction.Transaction;
 import com.bertan.budgetplanner.dto.CreateTransactionRequestDTO;
 import com.bertan.budgetplanner.dto.TransactionResponseDTO;
 import org.springframework.stereotype.Component;

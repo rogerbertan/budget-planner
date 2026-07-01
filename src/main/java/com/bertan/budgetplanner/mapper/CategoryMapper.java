@@ -1,6 +1,6 @@
 package com.bertan.budgetplanner.mapper;
 
-import com.bertan.budgetplanner.domain.Category;
+import com.bertan.budgetplanner.domain.category.Category;
 import com.bertan.budgetplanner.dto.CategoryResponseDTO;
 import com.bertan.budgetplanner.dto.CreateCategoryRequestDTO;
 import org.springframework.stereotype.Component;

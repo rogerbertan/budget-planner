@@ -1,5 +1,7 @@
 package com.bertan.budgetplanner.domain;
 
+import com.bertan.budgetplanner.domain.category.Category;
+import com.bertan.budgetplanner.domain.category.Type;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 

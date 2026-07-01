@@ -1,7 +1,7 @@
 package com.bertan.budgetplanner.repository;
 
-import com.bertan.budgetplanner.domain.Transaction;
-import com.bertan.budgetplanner.domain.Type;
+import com.bertan.budgetplanner.domain.transaction.Transaction;
+import com.bertan.budgetplanner.domain.category.Type;
 import com.bertan.budgetplanner.dto.CategoriesSummaryResponseDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

@@ -1,6 +1,6 @@
 package com.bertan.budgetplanner.repository;
 
-import com.bertan.budgetplanner.domain.Category;
+import com.bertan.budgetplanner.domain.category.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

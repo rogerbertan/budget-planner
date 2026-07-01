@@ -1,7 +1,7 @@
 package com.bertan.budgetplanner.mapper;
 
-import com.bertan.budgetplanner.domain.Category;
-import com.bertan.budgetplanner.domain.Type;
+import com.bertan.budgetplanner.domain.category.Category;
+import com.bertan.budgetplanner.domain.category.Type;
 import com.bertan.budgetplanner.dto.CategoryResponseDTO;
 import com.bertan.budgetplanner.dto.CreateCategoryRequestDTO;
 import org.junit.jupiter.api.Test;

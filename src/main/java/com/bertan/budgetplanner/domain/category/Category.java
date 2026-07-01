@@ -1,4 +1,4 @@
-package com.bertan.budgetplanner.domain;
+package com.bertan.budgetplanner.domain.category;
 
 import jakarta.persistence.*;
 

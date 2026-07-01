@@ -1,8 +1,8 @@
 package com.bertan.budgetplanner.service;
 
-import com.bertan.budgetplanner.domain.Category;
-import com.bertan.budgetplanner.domain.Transaction;
-import com.bertan.budgetplanner.domain.Type;
+import com.bertan.budgetplanner.domain.category.Category;
+import com.bertan.budgetplanner.domain.transaction.Transaction;
+import com.bertan.budgetplanner.domain.category.Type;
 import com.bertan.budgetplanner.dto.CategoriesSummaryResponseDTO;
 import com.bertan.budgetplanner.dto.CreateTransactionRequestDTO;
 import com.bertan.budgetplanner.dto.TransactionResponseDTO;

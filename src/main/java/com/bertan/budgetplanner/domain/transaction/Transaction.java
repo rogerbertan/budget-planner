@@ -1,5 +1,7 @@
-package com.bertan.budgetplanner.domain;
+package com.bertan.budgetplanner.domain.transaction;
 
+import com.bertan.budgetplanner.domain.category.Category;
+import com.bertan.budgetplanner.domain.category.Type;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
