@@ -2,7 +2,7 @@ spring:
   application:
     name: Budget Planner
   datasource:
-    url: ${DB_URL:jdbc:localhost://localhost:5432/budgetplanner}
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/budgetplanner}
     username: ${DB_USER:postgres}
     password: ${DB_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
