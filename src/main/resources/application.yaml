@@ -17,5 +17,8 @@ spring:
     locations: classpath:db/migration
     baseline-on-migrate: true
 
+jwt:
+  secret: ${JWT_SECRET:default-secret-key}
+
 project:
   version: @project.version@

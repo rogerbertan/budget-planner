@@ -1,10 +1,11 @@
 package com.bertan.budgetplanner.mapper;
 
 import com.bertan.budgetplanner.domain.user.User;
-import com.bertan.budgetplanner.dto.LoginRequest;
 import com.bertan.budgetplanner.dto.RegisterUserRequest;
 import com.bertan.budgetplanner.dto.RegisterUserResponse;
+import org.springframework.stereotype.Component;
 
+@Component
 public class UserMapper {
 
     public User toUser(RegisterUserRequest request) {
