@@ -3,9 +3,9 @@ package com.bertan.budgetplanner.service;
 import com.bertan.budgetplanner.domain.category.Category;
 import com.bertan.budgetplanner.domain.transaction.Transaction;
 import com.bertan.budgetplanner.domain.category.Type;
-import com.bertan.budgetplanner.dto.CategoriesSummaryResponseDTO;
-import com.bertan.budgetplanner.dto.CreateTransactionRequestDTO;
-import com.bertan.budgetplanner.dto.TransactionResponseDTO;
+import com.bertan.budgetplanner.dto.CategoriesSummaryResponse;
+import com.bertan.budgetplanner.dto.CreateTransactionRequest;
+import com.bertan.budgetplanner.dto.TransactionResponse;
 import com.bertan.budgetplanner.exception.ResourceNotFoundException;
 import com.bertan.budgetplanner.mapper.TransactionMapper;
 import com.bertan.budgetplanner.repository.CategoryRepository;
@@ -50,12 +50,12 @@ class TransactionServiceTest {
     void shouldReturnAllTransactionsPaged() {
         Pageable pageable = PageRequest.of(0, 10);
         Transaction transaction = new Transaction(Type.EXPENSE, BigDecimal.TEN, "Lunch", null, LocalDate.now());
-        TransactionResponseDTO dto = new TransactionResponseDTO(1L, Type.EXPENSE, BigDecimal.TEN, "Lunch", null, LocalDate.now(), null);
+        TransactionResponse dto = new TransactionResponse(1L, Type.EXPENSE, BigDecimal.TEN, "Lunch", null, LocalDate.now(), null);
 
         when(transactionRepository.findAll(pageable)).thenReturn(new PageImpl<>(List.of(transaction)));
         when(transactionMapper.toDto(transaction)).thenReturn(dto);
 
-        Page<TransactionResponseDTO> result = transactionService.findAll(pageable);
+        Page<TransactionResponse> result = transactionService.findAll(pageable);
 
         assertThat(result.getContent()).containsExactly(dto);
     }
@@ -65,7 +65,7 @@ class TransactionServiceTest {
         Pageable pageable = PageRequest.of(0, 10);
         when(transactionRepository.findAll(pageable)).thenReturn(new PageImpl<>(List.of()));
 
-        Page<TransactionResponseDTO> result = transactionService.findAll(pageable);
+        Page<TransactionResponse> result = transactionService.findAll(pageable);
 
         assertThat(result.getContent()).isEmpty();
     }
@@ -73,12 +73,12 @@ class TransactionServiceTest {
     @Test
     void shouldCreateTransactionWhenCategoryExists() {
         Long categoryId = 1L;
-        CreateTransactionRequestDTO request = new CreateTransactionRequestDTO(
+        CreateTransactionRequest request = new CreateTransactionRequest(
                 Type.EXPENSE, BigDecimal.TEN, "Lunch", categoryId, LocalDate.now());
         Category category = new Category("Food", Type.EXPENSE);
         Transaction mapped = new Transaction(Type.EXPENSE, BigDecimal.TEN, "Lunch", null, LocalDate.now());
         Transaction saved = new Transaction(Type.EXPENSE, BigDecimal.TEN, "Lunch", category, LocalDate.now());
-        TransactionResponseDTO responseDTO = new TransactionResponseDTO(
+        TransactionResponse responseDTO = new TransactionResponse(
                 1L, Type.EXPENSE, BigDecimal.TEN, "Lunch", categoryId, LocalDate.now(), null);
 
         when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
@@ -86,7 +86,7 @@ class TransactionServiceTest {
         when(transactionRepository.save(mapped)).thenReturn(saved);
         when(transactionMapper.toDto(saved)).thenReturn(responseDTO);
 
-        TransactionResponseDTO result = transactionService.createTransaction(request);
+        TransactionResponse result = transactionService.createTransaction(request);
 
         assertThat(result).isEqualTo(responseDTO);
         assertThat(mapped.getCategory()).isEqualTo(category);
@@ -95,7 +95,7 @@ class TransactionServiceTest {
     @Test
     void shouldThrowExceptionWhenCreatingTransactionWithNonExistentCategory() {
         Long categoryId = 99L;
-        CreateTransactionRequestDTO request = new CreateTransactionRequestDTO(
+        CreateTransactionRequest request = new CreateTransactionRequest(
                 Type.EXPENSE, BigDecimal.TEN, "Lunch", categoryId, LocalDate.now());
 
         when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
@@ -111,12 +111,12 @@ class TransactionServiceTest {
     void shouldReturnTransactionByIdWhenItExists() {
         Long id = 1L;
         Transaction transaction = new Transaction(Type.INCOME, BigDecimal.valueOf(100), "Salary", null, LocalDate.now());
-        TransactionResponseDTO dto = new TransactionResponseDTO(id, Type.INCOME, BigDecimal.valueOf(100), "Salary", null, LocalDate.now(), null);
+        TransactionResponse dto = new TransactionResponse(id, Type.INCOME, BigDecimal.valueOf(100), "Salary", null, LocalDate.now(), null);
 
         when(transactionRepository.findById(id)).thenReturn(Optional.of(transaction));
         when(transactionMapper.toDto(transaction)).thenReturn(dto);
 
-        TransactionResponseDTO result = transactionService.getTransactionById(id);
+        TransactionResponse result = transactionService.getTransactionById(id);
 
         assertThat(result).isEqualTo(dto);
     }
@@ -135,11 +135,11 @@ class TransactionServiceTest {
     void shouldUpdateTransactionWhenItAndCategoryExist() {
         Long id = 1L;
         Long categoryId = 2L;
-        CreateTransactionRequestDTO request = new CreateTransactionRequestDTO(
+        CreateTransactionRequest request = new CreateTransactionRequest(
                 Type.INCOME, BigDecimal.valueOf(200), "Bonus", categoryId, LocalDate.now());
         Transaction existing = new Transaction(Type.EXPENSE, BigDecimal.TEN, "Lunch", null, LocalDate.now());
         Category category = new Category("Bonus", Type.INCOME);
-        TransactionResponseDTO responseDTO = new TransactionResponseDTO(
+        TransactionResponse responseDTO = new TransactionResponse(
                 id, Type.INCOME, BigDecimal.valueOf(200), "Bonus", categoryId, LocalDate.now(), null);
 
         when(transactionRepository.findById(id)).thenReturn(Optional.of(existing));
@@ -147,7 +147,7 @@ class TransactionServiceTest {
         when(transactionRepository.save(existing)).thenReturn(existing);
         when(transactionMapper.toDto(existing)).thenReturn(responseDTO);
 
-        TransactionResponseDTO result = transactionService.updateTransaction(id, request);
+        TransactionResponse result = transactionService.updateTransaction(id, request);
 
         assertThat(result).isEqualTo(responseDTO);
         assertThat(existing.getType()).isEqualTo(Type.INCOME);
@@ -159,7 +159,7 @@ class TransactionServiceTest {
     @Test
     void shouldThrowExceptionWhenUpdatingNonExistentTransaction() {
         Long id = 99L;
-        CreateTransactionRequestDTO request = new CreateTransactionRequestDTO(
+        CreateTransactionRequest request = new CreateTransactionRequest(
                 Type.INCOME, BigDecimal.valueOf(200), "Bonus", 1L, LocalDate.now());
 
         when(transactionRepository.findById(id)).thenReturn(Optional.empty());
@@ -173,7 +173,7 @@ class TransactionServiceTest {
     void shouldThrowExceptionWhenUpdatingTransactionWithNonExistentCategory() {
         Long id = 1L;
         Long categoryId = 99L;
-        CreateTransactionRequestDTO request = new CreateTransactionRequestDTO(
+        CreateTransactionRequest request = new CreateTransactionRequest(
                 Type.INCOME, BigDecimal.valueOf(200), "Bonus", categoryId, LocalDate.now());
         Transaction existing = new Transaction(Type.EXPENSE, BigDecimal.TEN, "Lunch", null, LocalDate.now());
 
@@ -249,10 +249,10 @@ class TransactionServiceTest {
 
     @Test
     void shouldReturnCategoriesSummaries() {
-        CategoriesSummaryResponseDTO summary = new CategoriesSummaryResponseDTO("Food", BigDecimal.ZERO, BigDecimal.TEN);
+        CategoriesSummaryResponse summary = new CategoriesSummaryResponse("Food", BigDecimal.ZERO, BigDecimal.TEN);
         when(transactionRepository.findCategorySummariesByMonthAndYear(6, 2026)).thenReturn(List.of(summary));
 
-        List<CategoriesSummaryResponseDTO> result = transactionService.getCategoriesSummaries(6, 2026);
+        List<CategoriesSummaryResponse> result = transactionService.getCategoriesSummaries(6, 2026);
 
         assertThat(result).containsExactly(summary);
     }
@@ -261,7 +261,7 @@ class TransactionServiceTest {
     void shouldReturnEmptyCategoriesSummariesWhenNoneExist() {
         when(transactionRepository.findCategorySummariesByMonthAndYear(6, 2026)).thenReturn(List.of());
 
-        List<CategoriesSummaryResponseDTO> result = transactionService.getCategoriesSummaries(6, 2026);
+        List<CategoriesSummaryResponse> result = transactionService.getCategoriesSummaries(6, 2026);
 
         assertThat(result).isEmpty();
     }

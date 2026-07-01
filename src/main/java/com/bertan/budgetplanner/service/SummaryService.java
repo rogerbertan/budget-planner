@@ -1,8 +1,8 @@
 package com.bertan.budgetplanner.service;
 
-import com.bertan.budgetplanner.dto.BalanceResponseDTO;
-import com.bertan.budgetplanner.dto.CategoriesSummaryResponseDTO;
-import com.bertan.budgetplanner.dto.MonthlySummaryResponseDTO;
+import com.bertan.budgetplanner.dto.BalanceResponse;
+import com.bertan.budgetplanner.dto.CategoriesSummaryResponse;
+import com.bertan.budgetplanner.dto.MonthlySummaryResponse;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -18,17 +18,17 @@ public class SummaryService {
         this.transactionService = transactionService;
     }
 
-    public BalanceResponseDTO getBalanceSummary() {
+    public BalanceResponse getBalanceSummary() {
 
         BigDecimal totalIncome = transactionService.getTotalIncome();
         BigDecimal totalExpense = transactionService.getTotalExpense();
         BigDecimal netBalance = totalIncome.subtract(totalExpense)
                 .setScale(2, RoundingMode.HALF_UP);
 
-        return new BalanceResponseDTO(netBalance);
+        return new BalanceResponse(netBalance);
     }
 
-    public MonthlySummaryResponseDTO getMonthlySummary(int month, int year) {
+    public MonthlySummaryResponse getMonthlySummary(int month, int year) {
 
         BigDecimal monthlyIncome = transactionService.getMonthlyIncome(month, year)
                 .setScale(2, RoundingMode.HALF_UP);
@@ -37,15 +37,15 @@ public class SummaryService {
         BigDecimal monthlyNetBalance = monthlyIncome.subtract(monthlyExpense)
                 .setScale(2, RoundingMode.HALF_UP);
 
-        return new MonthlySummaryResponseDTO(monthlyIncome, monthlyExpense, monthlyNetBalance);
+        return new MonthlySummaryResponse(monthlyIncome, monthlyExpense, monthlyNetBalance);
     }
 
-    public List<CategoriesSummaryResponseDTO> getCategoriesSummary(int month, int year) {
+    public List<CategoriesSummaryResponse> getCategoriesSummary(int month, int year) {
 
-        List<CategoriesSummaryResponseDTO> categoriesSummaries = transactionService.getCategoriesSummaries(month, year);
+        List<CategoriesSummaryResponse> categoriesSummaries = transactionService.getCategoriesSummaries(month, year);
 
         return categoriesSummaries.stream()
-                .map(category -> new CategoriesSummaryResponseDTO(
+                .map(category -> new CategoriesSummaryResponse(
                         category.category(),
                         category.totalIncome().setScale(2, RoundingMode.HALF_UP),
                         category.totalExpense().setScale(2, RoundingMode.HALF_UP)

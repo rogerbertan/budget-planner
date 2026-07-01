@@ -1,8 +1,9 @@
 package com.bertan.budgetplanner.controller;
 
-import com.bertan.budgetplanner.dto.CategoryResponseDTO;
-import com.bertan.budgetplanner.dto.CreateCategoryRequestDTO;
+import com.bertan.budgetplanner.dto.CategoryResponse;
+import com.bertan.budgetplanner.dto.CreateCategoryRequest;
 import com.bertan.budgetplanner.service.CategoryService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,25 +21,25 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CategoryResponseDTO>> getAllCategories() {
+    public ResponseEntity<List<CategoryResponse>> getAllCategories() {
 
         return ResponseEntity.ok(categoryService.findAll());
     }
 
     @PostMapping
-    public ResponseEntity<CategoryResponseDTO> createCategory(
-            @RequestBody CreateCategoryRequestDTO requestDTO) {
+    public ResponseEntity<CategoryResponse> createCategory(
+            @Valid @RequestBody CreateCategoryRequest requestDTO) {
 
-        CategoryResponseDTO created = categoryService.createCategory(requestDTO);
+        CategoryResponse created = categoryService.createCategory(requestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CategoryResponseDTO> updateCategory(
+    public ResponseEntity<CategoryResponse> updateCategory(
             @PathVariable Long id,
-            @RequestBody CreateCategoryRequestDTO requestDTO) {
+            @Valid @RequestBody CreateCategoryRequest requestDTO) {
 
-        CategoryResponseDTO updated = categoryService.updateCategory(id, requestDTO);
+        CategoryResponse updated = categoryService.updateCategory(id, requestDTO);
         return ResponseEntity.ok(updated);
     }
 

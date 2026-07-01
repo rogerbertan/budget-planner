@@ -4,12 +4,15 @@ import com.bertan.budgetplanner.domain.category.Type;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-public record CreateTransactionRequestDTO(
+public record TransactionResponse(
+        Long id,
         Type type,
         BigDecimal amount,
         String description,
-        Long categoryId,
-        LocalDate transactionDate
+        Long category,
+        LocalDate transactionDate,
+        LocalDateTime createdAt
 ) {
 }

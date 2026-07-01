@@ -1,6 +1,6 @@
 package com.bertan.budgetplanner.exception;
 
-import com.bertan.budgetplanner.dto.ErrorResponseDTO;
+import com.bertan.budgetplanner.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -21,15 +21,15 @@ public class GlobalExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(BudgetPlannerException.class)
-    public ResponseEntity<ErrorResponseDTO> handleBudgetPlannerException(
+    public ResponseEntity<ErrorResponse> handleBudgetPlannerException(
             BudgetPlannerException ex) {
 
-        ErrorResponseDTO errorResponse = new ErrorResponseDTO(ex.getMessage());
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
         return ResponseEntity.status(ex.getHttpStatus()).body(errorResponse);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponseDTO> handleValidationException(
+    public ResponseEntity<ErrorResponse> handleValidationException(
             MethodArgumentNotValidException ex) {
 
         String errors = ex.getBindingResult()
@@ -38,60 +38,60 @@ public class GlobalExceptionHandler {
                 .map(error -> error.getField() + ": " + error.getDefaultMessage())
                 .collect(Collectors.joining(", "));
 
-        ErrorResponseDTO errorResponse = new ErrorResponseDTO(errors);
+        ErrorResponse errorResponse = new ErrorResponse(errors);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ErrorResponseDTO> handleTypeMismatchException(
+    public ResponseEntity<ErrorResponse> handleTypeMismatchException(
             MethodArgumentTypeMismatchException ex) {
 
         String error = String.format("Parameter '%s' should be of type %s",
                 ex.getName(),
                 ex.getRequiredType().getSimpleName());
 
-        ErrorResponseDTO errorResponse = new ErrorResponseDTO(error);
+        ErrorResponse errorResponse = new ErrorResponse(error);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorResponseDTO> handleHttpMessageNotReadableException(
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(
             HttpMessageNotReadableException ex) {
 
-        ErrorResponseDTO errorResponse = new ErrorResponseDTO("Malformed JSON request");
+        ErrorResponse errorResponse = new ErrorResponse("Malformed JSON request");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<ErrorResponseDTO> handleMethodNotSupportedException(
+    public ResponseEntity<ErrorResponse> handleMethodNotSupportedException(
             HttpRequestMethodNotSupportedException ex) {
 
         String error = String.format("Method %s is not supported for this endpoint. Supported methods: %s",
                 ex.getMethod(),
                 String.join(", ", ex.getSupportedMethods()));
 
-        ErrorResponseDTO errorResponse = new ErrorResponseDTO(error);
+        ErrorResponse errorResponse = new ErrorResponse(error);
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(errorResponse);
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<ErrorResponseDTO> handleMissingServletRequestParameterException(
+    public ResponseEntity<ErrorResponse> handleMissingServletRequestParameterException(
             MissingServletRequestParameterException ex) {
 
         String error = String.format("Required parameter '%s' is missing",
                 ex.getParameterName());
 
-        ErrorResponseDTO errorResponse = new ErrorResponseDTO(error);
+        ErrorResponse errorResponse = new ErrorResponse(error);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponseDTO> handleGenericException(
+    public ResponseEntity<ErrorResponse> handleGenericException(
             Exception ex) {
 
         logger.error("Unexpected error processing request", ex);
 
-        ErrorResponseDTO errorResponse = new ErrorResponseDTO(
+        ErrorResponse errorResponse = new ErrorResponse(
                 "An unexpected error occurred");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }

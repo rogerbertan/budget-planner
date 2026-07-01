@@ -2,8 +2,8 @@ package com.bertan.budgetplanner.mapper;
 
 import com.bertan.budgetplanner.domain.category.Category;
 import com.bertan.budgetplanner.domain.category.Type;
-import com.bertan.budgetplanner.dto.CategoryResponseDTO;
-import com.bertan.budgetplanner.dto.CreateCategoryRequestDTO;
+import com.bertan.budgetplanner.dto.CategoryResponse;
+import com.bertan.budgetplanner.dto.CreateCategoryRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -20,7 +20,7 @@ class CategoryMapperTest {
         Category category = new Category("Salary", Type.INCOME);
         ReflectionTestUtils.setField(category, "id", 1L);
 
-        CategoryResponseDTO dto = categoryMapper.toDto(category);
+        CategoryResponse dto = categoryMapper.toDto(category);
 
         assertThat(dto.id()).isEqualTo(1L);
         assertThat(dto.name()).isEqualTo("Salary");
@@ -29,7 +29,7 @@ class CategoryMapperTest {
 
     @Test
     void shouldMapCreateCategoryRequestDtoToEntity() {
-        CreateCategoryRequestDTO request = new CreateCategoryRequestDTO("Groceries", Type.EXPENSE);
+        CreateCategoryRequest request = new CreateCategoryRequest("Groceries", Type.EXPENSE);
 
         Category entity = categoryMapper.toEntity(request);
 
@@ -44,7 +44,7 @@ class CategoryMapperTest {
         Category category1 = new Category("Salary", Type.INCOME);
         Category category2 = new Category("Groceries", Type.EXPENSE);
 
-        List<CategoryResponseDTO> result = categoryMapper.toDtoList(List.of(category1, category2));
+        List<CategoryResponse> result = categoryMapper.toDtoList(List.of(category1, category2));
 
         assertThat(result).hasSize(2);
         assertThat(result.get(0).name()).isEqualTo("Salary");
@@ -53,7 +53,7 @@ class CategoryMapperTest {
 
     @Test
     void shouldReturnEmptyListWhenMappingEmptyCategoryList() {
-        List<CategoryResponseDTO> result = categoryMapper.toDtoList(List.of());
+        List<CategoryResponse> result = categoryMapper.toDtoList(List.of());
 
         assertThat(result).isEmpty();
     }

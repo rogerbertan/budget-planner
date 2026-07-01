@@ -3,9 +3,9 @@ package com.bertan.budgetplanner.service;
 import com.bertan.budgetplanner.domain.category.Category;
 import com.bertan.budgetplanner.domain.transaction.Transaction;
 import com.bertan.budgetplanner.domain.category.Type;
-import com.bertan.budgetplanner.dto.CategoriesSummaryResponseDTO;
-import com.bertan.budgetplanner.dto.CreateTransactionRequestDTO;
-import com.bertan.budgetplanner.dto.TransactionResponseDTO;
+import com.bertan.budgetplanner.dto.CategoriesSummaryResponse;
+import com.bertan.budgetplanner.dto.CreateTransactionRequest;
+import com.bertan.budgetplanner.dto.TransactionResponse;
 import com.bertan.budgetplanner.exception.ResourceNotFoundException;
 import com.bertan.budgetplanner.mapper.TransactionMapper;
 import com.bertan.budgetplanner.repository.CategoryRepository;
@@ -34,14 +34,14 @@ public class TransactionService {
     }
 
     @Transactional(readOnly = true)
-    public Page<TransactionResponseDTO> findAll(Pageable pageable) {
+    public Page<TransactionResponse> findAll(Pageable pageable) {
 
         return transactionRepository.findAll(pageable)
                 .map(transactionMapper::toDto);
     }
 
     @Transactional
-    public TransactionResponseDTO createTransaction(CreateTransactionRequestDTO requestDTO) {
+    public TransactionResponse createTransaction(CreateTransactionRequest requestDTO) {
 
         Category category = categoryRepository.findById(requestDTO.categoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Category", requestDTO.categoryId().toString()));
@@ -54,14 +54,14 @@ public class TransactionService {
     }
 
     @Transactional(readOnly = true)
-    public TransactionResponseDTO getTransactionById(Long id) {
+    public TransactionResponse getTransactionById(Long id) {
         Transaction transaction = transactionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Transaction", id.toString()));
 
         return transactionMapper.toDto(transaction);
     }
 
-    public TransactionResponseDTO updateTransaction(Long id, CreateTransactionRequestDTO requestDTO) {
+    public TransactionResponse updateTransaction(Long id, CreateTransactionRequest requestDTO) {
 
         Transaction existing = transactionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Transaction", id.toString()));
@@ -107,7 +107,7 @@ public class TransactionService {
         return transactionRepository.sumAmountByMonthAndYearAndType(month, year, Type.EXPENSE);
     }
 
-    public List<CategoriesSummaryResponseDTO> getCategoriesSummaries(int month, int year) {
+    public List<CategoriesSummaryResponse> getCategoriesSummaries(int month, int year) {
 
         return transactionRepository.findCategorySummariesByMonthAndYear(month, year);
     }

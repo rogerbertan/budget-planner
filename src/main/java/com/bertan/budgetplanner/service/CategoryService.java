@@ -1,8 +1,8 @@
 package com.bertan.budgetplanner.service;
 
 import com.bertan.budgetplanner.domain.category.Category;
-import com.bertan.budgetplanner.dto.CategoryResponseDTO;
-import com.bertan.budgetplanner.dto.CreateCategoryRequestDTO;
+import com.bertan.budgetplanner.dto.CategoryResponse;
+import com.bertan.budgetplanner.dto.CreateCategoryRequest;
 import com.bertan.budgetplanner.exception.ResourceNotFoundException;
 import com.bertan.budgetplanner.mapper.CategoryMapper;
 import com.bertan.budgetplanner.repository.CategoryRepository;
@@ -23,14 +23,14 @@ public class CategoryService {
     }
 
     @Transactional(readOnly = true)
-    public List<CategoryResponseDTO> findAll() {
+    public List<CategoryResponse> findAll() {
 
         List<Category> categories = categoryRepository.findAll();
         return categoryMapper.toDtoList(categories);
     }
 
     @Transactional
-    public CategoryResponseDTO createCategory(CreateCategoryRequestDTO requestDTO) {
+    public CategoryResponse createCategory(CreateCategoryRequest requestDTO) {
 
         Category category = categoryMapper.toEntity(requestDTO);
         Category saved = categoryRepository.save(category);
@@ -38,7 +38,7 @@ public class CategoryService {
     }
 
     @Transactional
-    public CategoryResponseDTO updateCategory(Long id, CreateCategoryRequestDTO requestDTO) {
+    public CategoryResponse updateCategory(Long id, CreateCategoryRequest requestDTO) {
 
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Category", id.toString()));

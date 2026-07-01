@@ -1,8 +1,9 @@
 package com.bertan.budgetplanner.controller;
 
-import com.bertan.budgetplanner.dto.CreateTransactionRequestDTO;
-import com.bertan.budgetplanner.dto.TransactionResponseDTO;
+import com.bertan.budgetplanner.dto.CreateTransactionRequest;
+import com.bertan.budgetplanner.dto.TransactionResponse;
 import com.bertan.budgetplanner.service.TransactionService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -22,33 +23,33 @@ public class TransactionController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<TransactionResponseDTO>> getAllTransactions(
+    public ResponseEntity<Page<TransactionResponse>> getAllTransactions(
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
         return ResponseEntity.ok(transactionService.findAll(pageable));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TransactionResponseDTO> getTransactionById(
+    public ResponseEntity<TransactionResponse> getTransactionById(
             @PathVariable Long id) {
 
         return ResponseEntity.ok(transactionService.getTransactionById(id));
     }
 
     @PostMapping
-    public ResponseEntity<TransactionResponseDTO> createTransaction(
-            @RequestBody CreateTransactionRequestDTO requestDTO) {
+    public ResponseEntity<TransactionResponse> createTransaction(
+            @Valid @RequestBody CreateTransactionRequest requestDTO) {
 
-        TransactionResponseDTO created = transactionService.createTransaction(requestDTO);
+        TransactionResponse created = transactionService.createTransaction(requestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TransactionResponseDTO> updateTransaction(
+    public ResponseEntity<TransactionResponse> updateTransaction(
             @PathVariable Long id,
-            @RequestBody CreateTransactionRequestDTO requestDTO) {
+            @Valid @RequestBody CreateTransactionRequest requestDTO) {
 
-        TransactionResponseDTO updated = transactionService.updateTransaction(id, requestDTO);
+        TransactionResponse updated = transactionService.updateTransaction(id, requestDTO);
         return ResponseEntity.ok(updated);
     }
 

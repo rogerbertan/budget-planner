@@ -1,8 +1,8 @@
 package com.bertan.budgetplanner.controller;
 
-import com.bertan.budgetplanner.dto.BalanceResponseDTO;
-import com.bertan.budgetplanner.dto.CategoriesSummaryResponseDTO;
-import com.bertan.budgetplanner.dto.MonthlySummaryResponseDTO;
+import com.bertan.budgetplanner.dto.BalanceResponse;
+import com.bertan.budgetplanner.dto.CategoriesSummaryResponse;
+import com.bertan.budgetplanner.dto.MonthlySummaryResponse;
 import com.bertan.budgetplanner.service.SummaryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,26 +23,26 @@ public class SummaryController {
     }
 
     @GetMapping("/balance")
-    public ResponseEntity<BalanceResponseDTO> getBalanceSummary() {
-        BalanceResponseDTO balance = summaryService.getBalanceSummary();
+    public ResponseEntity<BalanceResponse> getBalanceSummary() {
+        BalanceResponse balance = summaryService.getBalanceSummary();
         return ResponseEntity.ok(balance);
     }
 
     @GetMapping("/monthly")
-    public ResponseEntity<MonthlySummaryResponseDTO> getMonthlySummary(
+    public ResponseEntity<MonthlySummaryResponse> getMonthlySummary(
             @RequestParam("month") int month,
             @RequestParam("year") int year) {
 
-        MonthlySummaryResponseDTO monthlySummary = summaryService.getMonthlySummary(month, year);
+        MonthlySummaryResponse monthlySummary = summaryService.getMonthlySummary(month, year);
         return ResponseEntity.ok(monthlySummary);
     }
 
     @GetMapping("/categories")
-    public ResponseEntity<List<CategoriesSummaryResponseDTO>> getCategoriesSummary(
+    public ResponseEntity<List<CategoriesSummaryResponse>> getCategoriesSummary(
             @RequestParam("month") int month,
             @RequestParam("year") int year) {
 
-        List<CategoriesSummaryResponseDTO> categoriesSummary = summaryService.getCategoriesSummary(month, year);
+        List<CategoriesSummaryResponse> categoriesSummary = summaryService.getCategoriesSummary(month, year);
         return ResponseEntity.ok(categoriesSummary);
     }
 }

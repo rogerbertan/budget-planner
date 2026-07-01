@@ -2,7 +2,7 @@ package com.bertan.budgetplanner.repository;
 
 import com.bertan.budgetplanner.domain.transaction.Transaction;
 import com.bertan.budgetplanner.domain.category.Type;
-import com.bertan.budgetplanner.dto.CategoriesSummaryResponseDTO;
+import com.bertan.budgetplanner.dto.CategoriesSummaryResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -28,7 +28,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             @Param("type") Type type);
 
 
-    @Query("SELECT new com.bertan.budgetplanner.dto.CategoriesSummaryResponseDTO(" +
+    @Query("SELECT new com.bertan.budgetplanner.dto.CategoriesSummaryResponse(" +
             "t.category.name, " +
             "COALESCE(SUM(CASE WHEN t.type = 'INCOME' THEN t.amount ELSE 0 END), 0), " +
             "COALESCE(SUM(CASE WHEN t.type = 'EXPENSE' THEN t.amount ELSE 0 END), 0)) " +
@@ -36,7 +36,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             "WHERE YEAR(t.transactionDate) = :year " +
             "AND MONTH(t.transactionDate) = :month " +
             "GROUP BY c.name")
-    List<CategoriesSummaryResponseDTO> findCategorySummariesByMonthAndYear(
+    List<CategoriesSummaryResponse> findCategorySummariesByMonthAndYear(
             @Param("month") int month,
             @Param("year") int year);
 }

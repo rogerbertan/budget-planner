@@ -1,6 +1,6 @@
 package com.bertan.budgetplanner.dto;
 
-public record ErrorResponseDTO(
+public record ErrorResponse(
         String error
 ) {
 }

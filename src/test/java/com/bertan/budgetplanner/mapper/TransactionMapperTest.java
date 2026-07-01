@@ -3,8 +3,8 @@ package com.bertan.budgetplanner.mapper;
 import com.bertan.budgetplanner.domain.category.Category;
 import com.bertan.budgetplanner.domain.transaction.Transaction;
 import com.bertan.budgetplanner.domain.category.Type;
-import com.bertan.budgetplanner.dto.CreateTransactionRequestDTO;
-import com.bertan.budgetplanner.dto.TransactionResponseDTO;
+import com.bertan.budgetplanner.dto.CreateTransactionRequest;
+import com.bertan.budgetplanner.dto.TransactionResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -25,7 +25,7 @@ class TransactionMapperTest {
         Transaction transaction = new Transaction(Type.EXPENSE, BigDecimal.TEN, "Lunch", category, LocalDate.now());
         ReflectionTestUtils.setField(transaction, "id", 1L);
 
-        TransactionResponseDTO dto = transactionMapper.toDto(transaction);
+        TransactionResponse dto = transactionMapper.toDto(transaction);
 
         assertThat(dto.id()).isEqualTo(1L);
         assertThat(dto.type()).isEqualTo(Type.EXPENSE);
@@ -39,7 +39,7 @@ class TransactionMapperTest {
     void shouldMapTransactionToDtoWhenCategoryIsNull() {
         Transaction transaction = new Transaction(Type.EXPENSE, BigDecimal.TEN, "Lunch", null, LocalDate.now());
 
-        TransactionResponseDTO dto = transactionMapper.toDto(transaction);
+        TransactionResponse dto = transactionMapper.toDto(transaction);
 
         assertThat(dto.category()).isNull();
     }
@@ -47,7 +47,7 @@ class TransactionMapperTest {
     @Test
     void shouldMapCreateTransactionRequestDtoToEntity() {
         LocalDate date = LocalDate.now();
-        CreateTransactionRequestDTO request = new CreateTransactionRequestDTO(
+        CreateTransactionRequest request = new CreateTransactionRequest(
                 Type.INCOME, BigDecimal.valueOf(100), "Salary", 3L, date);
 
         Transaction entity = transactionMapper.toEntity(request);
@@ -64,7 +64,7 @@ class TransactionMapperTest {
         Transaction transaction1 = new Transaction(Type.EXPENSE, BigDecimal.TEN, "Lunch", null, LocalDate.now());
         Transaction transaction2 = new Transaction(Type.INCOME, BigDecimal.ONE, "Salary", null, LocalDate.now());
 
-        List<TransactionResponseDTO> result = transactionMapper.toDtoList(List.of(transaction1, transaction2));
+        List<TransactionResponse> result = transactionMapper.toDtoList(List.of(transaction1, transaction2));
 
         assertThat(result).hasSize(2);
         assertThat(result.get(0).description()).isEqualTo("Lunch");
@@ -73,7 +73,7 @@ class TransactionMapperTest {
 
     @Test
     void shouldReturnEmptyListWhenMappingEmptyTransactionList() {
-        List<TransactionResponseDTO> result = transactionMapper.toDtoList(List.of());
+        List<TransactionResponse> result = transactionMapper.toDtoList(List.of());
 
         assertThat(result).isEmpty();
     }

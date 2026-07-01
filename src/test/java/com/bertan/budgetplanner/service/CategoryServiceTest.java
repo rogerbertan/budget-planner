@@ -2,8 +2,8 @@ package com.bertan.budgetplanner.service;
 
 import com.bertan.budgetplanner.domain.category.Category;
 import com.bertan.budgetplanner.domain.category.Type;
-import com.bertan.budgetplanner.dto.CategoryResponseDTO;
-import com.bertan.budgetplanner.dto.CreateCategoryRequestDTO;
+import com.bertan.budgetplanner.dto.CategoryResponse;
+import com.bertan.budgetplanner.dto.CreateCategoryRequest;
 import com.bertan.budgetplanner.exception.ResourceNotFoundException;
 import com.bertan.budgetplanner.mapper.CategoryMapper;
 import com.bertan.budgetplanner.repository.CategoryRepository;
@@ -38,12 +38,12 @@ class CategoryServiceTest {
     @Test
     void shouldReturnAllCategories() {
         Category category = new Category("Salary", Type.INCOME);
-        CategoryResponseDTO dto = new CategoryResponseDTO(1L, "Salary", Type.INCOME);
+        CategoryResponse dto = new CategoryResponse(1L, "Salary", Type.INCOME);
 
         when(categoryRepository.findAll()).thenReturn(List.of(category));
         when(categoryMapper.toDtoList(List.of(category))).thenReturn(List.of(dto));
 
-        List<CategoryResponseDTO> result = categoryService.findAll();
+        List<CategoryResponse> result = categoryService.findAll();
 
         assertThat(result).containsExactly(dto);
     }
@@ -53,23 +53,23 @@ class CategoryServiceTest {
         when(categoryRepository.findAll()).thenReturn(List.of());
         when(categoryMapper.toDtoList(List.of())).thenReturn(List.of());
 
-        List<CategoryResponseDTO> result = categoryService.findAll();
+        List<CategoryResponse> result = categoryService.findAll();
 
         assertThat(result).isEmpty();
     }
 
     @Test
     void shouldCreateCategory() {
-        CreateCategoryRequestDTO request = new CreateCategoryRequestDTO("Groceries", Type.EXPENSE);
+        CreateCategoryRequest request = new CreateCategoryRequest("Groceries", Type.EXPENSE);
         Category entity = new Category("Groceries", Type.EXPENSE);
         Category saved = new Category("Groceries", Type.EXPENSE);
-        CategoryResponseDTO responseDTO = new CategoryResponseDTO(1L, "Groceries", Type.EXPENSE);
+        CategoryResponse responseDTO = new CategoryResponse(1L, "Groceries", Type.EXPENSE);
 
         when(categoryMapper.toEntity(request)).thenReturn(entity);
         when(categoryRepository.save(entity)).thenReturn(saved);
         when(categoryMapper.toDto(saved)).thenReturn(responseDTO);
 
-        CategoryResponseDTO result = categoryService.createCategory(request);
+        CategoryResponse result = categoryService.createCategory(request);
 
         assertThat(result).isEqualTo(responseDTO);
         verify(categoryRepository).save(entity);
@@ -78,14 +78,14 @@ class CategoryServiceTest {
     @Test
     void shouldUpdateCategoryWhenItExists() {
         Long id = 1L;
-        CreateCategoryRequestDTO request = new CreateCategoryRequestDTO("Updated Name", Type.INCOME);
+        CreateCategoryRequest request = new CreateCategoryRequest("Updated Name", Type.INCOME);
         Category existing = new Category("Old Name", Type.EXPENSE);
-        CategoryResponseDTO responseDTO = new CategoryResponseDTO(id, "Updated Name", Type.INCOME);
+        CategoryResponse responseDTO = new CategoryResponse(id, "Updated Name", Type.INCOME);
 
         when(categoryRepository.findById(id)).thenReturn(Optional.of(existing));
         when(categoryMapper.toDto(existing)).thenReturn(responseDTO);
 
-        CategoryResponseDTO result = categoryService.updateCategory(id, request);
+        CategoryResponse result = categoryService.updateCategory(id, request);
 
         assertThat(result).isEqualTo(responseDTO);
         assertThat(existing.getName()).isEqualTo("Updated Name");
@@ -95,7 +95,7 @@ class CategoryServiceTest {
     @Test
     void shouldThrowExceptionWhenUpdatingNonExistentCategory() {
         Long id = 99L;
-        CreateCategoryRequestDTO request = new CreateCategoryRequestDTO("Updated Name", Type.INCOME);
+        CreateCategoryRequest request = new CreateCategoryRequest("Updated Name", Type.INCOME);
 
         when(categoryRepository.findById(id)).thenReturn(Optional.empty());
 

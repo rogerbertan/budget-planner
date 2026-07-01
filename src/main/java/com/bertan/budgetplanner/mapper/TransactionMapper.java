@@ -1,8 +1,8 @@
 package com.bertan.budgetplanner.mapper;
 
 import com.bertan.budgetplanner.domain.transaction.Transaction;
-import com.bertan.budgetplanner.dto.CreateTransactionRequestDTO;
-import com.bertan.budgetplanner.dto.TransactionResponseDTO;
+import com.bertan.budgetplanner.dto.CreateTransactionRequest;
+import com.bertan.budgetplanner.dto.TransactionResponse;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -10,8 +10,8 @@ import java.util.List;
 @Component
 public class TransactionMapper {
 
-    public TransactionResponseDTO toDto(Transaction transaction) {
-        return new TransactionResponseDTO(
+    public TransactionResponse toDto(Transaction transaction) {
+        return new TransactionResponse(
                 transaction.getId(),
                 transaction.getType(),
                 transaction.getAmount(),
@@ -22,7 +22,7 @@ public class TransactionMapper {
         );
     }
 
-    public Transaction toEntity(CreateTransactionRequestDTO dto) {
+    public Transaction toEntity(CreateTransactionRequest dto) {
         Transaction transaction = new Transaction();
         transaction.setType(dto.type());
         transaction.setAmount(dto.amount());
@@ -31,7 +31,7 @@ public class TransactionMapper {
         return transaction;
     }
 
-    public List<TransactionResponseDTO> toDtoList(List<Transaction> transactions) {
+    public List<TransactionResponse> toDtoList(List<Transaction> transactions) {
         return transactions.stream()
                 .map(this::toDto)
                 .toList();
