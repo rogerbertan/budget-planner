@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/summary")
+@RequestMapping("/api/v1/summary")
 public class SummaryController {
 
     private final SummaryService summaryService;

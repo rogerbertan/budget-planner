@@ -16,7 +16,7 @@ class CategoryControllerIT extends AbstractIntegrationTest {
                         {"name": "Salary", "type": "INCOME"}
                         """)
                 .when()
-                .post("/categories")
+                .post("/api/v1/categories")
                 .then()
                 .statusCode(201)
                 .body("name", equalTo("Salary"))
@@ -28,14 +28,14 @@ class CategoryControllerIT extends AbstractIntegrationTest {
     void shouldListCreatedCategories() {
         given().contentType("application/json").body("""
                 {"name": "Salary", "type": "INCOME"}
-                """).post("/categories");
+                """).post("/api/v1/categories");
         given().contentType("application/json").body("""
                 {"name": "Groceries", "type": "EXPENSE"}
-                """).post("/categories");
+                """).post("/api/v1/categories");
 
         given()
                 .when()
-                .get("/categories")
+                .get("/api/v1/categories")
                 .then()
                 .statusCode(200)
                 .body("$", hasSize(2));
@@ -45,7 +45,7 @@ class CategoryControllerIT extends AbstractIntegrationTest {
     void shouldUpdateCategoryWhenItExists() {
         Long id = given().contentType("application/json").body("""
                 {"name": "Salary", "type": "INCOME"}
-                """).post("/categories").jsonPath().getLong("id");
+                """).post("/api/v1/categories").jsonPath().getLong("id");
 
         given()
                 .contentType("application/json")
@@ -53,7 +53,7 @@ class CategoryControllerIT extends AbstractIntegrationTest {
                         {"name": "Updated Salary", "type": "INCOME"}
                         """)
                 .when()
-                .put("/categories/{id}", id)
+                .put("/api/v1/categories/{id}", id)
                 .then()
                 .statusCode(200)
                 .body("name", equalTo("Updated Salary"));
@@ -67,7 +67,7 @@ class CategoryControllerIT extends AbstractIntegrationTest {
                         {"name": "Updated Salary", "type": "INCOME"}
                         """)
                 .when()
-                .put("/categories/{id}", 999999L)
+                .put("/api/v1/categories/{id}", 999999L)
                 .then()
                 .statusCode(404);
     }
@@ -76,11 +76,11 @@ class CategoryControllerIT extends AbstractIntegrationTest {
     void shouldDeleteCategoryWhenItExists() {
         Long id = given().contentType("application/json").body("""
                 {"name": "Salary", "type": "INCOME"}
-                """).post("/categories").jsonPath().getLong("id");
+                """).post("/api/v1/categories").jsonPath().getLong("id");
 
         given()
                 .when()
-                .delete("/categories/{id}", id)
+                .delete("/api/v1/categories/{id}", id)
                 .then()
                 .statusCode(204);
     }
@@ -89,7 +89,7 @@ class CategoryControllerIT extends AbstractIntegrationTest {
     void shouldReturn404WhenDeletingNonExistentCategory() {
         given()
                 .when()
-                .delete("/categories/{id}", 999999L)
+                .delete("/api/v1/categories/{id}", 999999L)
                 .then()
                 .statusCode(404);
     }
@@ -100,7 +100,7 @@ class CategoryControllerIT extends AbstractIntegrationTest {
                 .contentType("application/json")
                 .body("{ this is not valid json")
                 .when()
-                .post("/categories")
+                .post("/api/v1/categories")
                 .then()
                 .statusCode(400);
     }

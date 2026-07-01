@@ -71,9 +71,9 @@ Cobertura medida com JaCoCo (`mvn verify`), excluindo pacotes de `dto`, `excepti
 
 ## Endpoints principais
 
-- `GET /health`: status da API
-- `GET/POST/PUT/DELETE /categories`: categorias (tipo `INCOME` ou `EXPENSE`)
-- `GET/POST/PUT/DELETE /transactions`: transações (paginado)
-- `GET /summary/balance`: saldo geral
-- `GET /summary/monthly?month=&year=`: resumo mensal
-- `GET /summary/categories?month=&year=`: totais por categoria
+- `GET /api/v1/health`: status da API
+- `GET/POST/PUT/DELETE /api/v1/categories`: categorias (tipo `INCOME` ou `EXPENSE`)
+- `GET/POST/PUT/DELETE /api/v1/transactions`: transações (paginado)
+- `GET /api/v1/summary/balance`: saldo geral
+- `GET /api/v1/summary/monthly?month=&year=`: resumo mensal
+- `GET /api/v1/summary/categories?month=&year=`: totais por categoria

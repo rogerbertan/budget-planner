@@ -13,7 +13,7 @@ class TransactionControllerIT extends AbstractIntegrationTest {
         return given()
                 .contentType("application/json")
                 .body("{\"name\": \"%s\", \"type\": \"%s\"}".formatted(name, type))
-                .post("/categories")
+                .post("/api/v1/categories")
                 .jsonPath()
                 .getLong("id");
     }
@@ -28,7 +28,7 @@ class TransactionControllerIT extends AbstractIntegrationTest {
                         {"type": "EXPENSE", "amount": 50.00, "description": "Lunch", "categoryId": %d, "transactionDate": "2026-06-22"}
                         """.formatted(categoryId))
                 .when()
-                .post("/transactions")
+                .post("/api/v1/transactions")
                 .then()
                 .statusCode(201)
                 .body("description", equalTo("Lunch"))
@@ -44,7 +44,7 @@ class TransactionControllerIT extends AbstractIntegrationTest {
                         {"type": "EXPENSE", "amount": 50.00, "description": "Lunch", "categoryId": 999999, "transactionDate": "2026-06-22"}
                         """)
                 .when()
-                .post("/transactions")
+                .post("/api/v1/transactions")
                 .then()
                 .statusCode(404);
     }
@@ -57,13 +57,13 @@ class TransactionControllerIT extends AbstractIntegrationTest {
                 .body("""
                         {"type": "EXPENSE", "amount": 50.00, "description": "Lunch", "categoryId": %d, "transactionDate": "2026-06-22"}
                         """.formatted(categoryId))
-                .post("/transactions")
+                .post("/api/v1/transactions")
                 .jsonPath()
                 .getLong("id");
 
         given()
                 .when()
-                .get("/transactions/{id}", transactionId)
+                .get("/api/v1/transactions/{id}", transactionId)
                 .then()
                 .statusCode(200)
                 .body("description", equalTo("Lunch"));
@@ -73,7 +73,7 @@ class TransactionControllerIT extends AbstractIntegrationTest {
     void shouldReturn404WhenGettingNonExistentTransaction() {
         given()
                 .when()
-                .get("/transactions/{id}", 999999L)
+                .get("/api/v1/transactions/{id}", 999999L)
                 .then()
                 .statusCode(404);
     }
@@ -87,12 +87,12 @@ class TransactionControllerIT extends AbstractIntegrationTest {
                     .body("""
                             {"type": "EXPENSE", "amount": 10.00, "description": "Item %d", "categoryId": %d, "transactionDate": "2026-06-22"}
                             """.formatted(i, categoryId))
-                    .post("/transactions");
+                    .post("/api/v1/transactions");
         }
 
         given()
                 .when()
-                .get("/transactions?page=0&size=2")
+                .get("/api/v1/transactions?page=0&size=2")
                 .then()
                 .statusCode(200)
                 .body("content", hasSize(2))
@@ -107,7 +107,7 @@ class TransactionControllerIT extends AbstractIntegrationTest {
                 .body("""
                         {"type": "EXPENSE", "amount": 50.00, "description": "Lunch", "categoryId": %d, "transactionDate": "2026-06-22"}
                         """.formatted(categoryId))
-                .post("/transactions")
+                .post("/api/v1/transactions")
                 .jsonPath()
                 .getLong("id");
 
@@ -117,7 +117,7 @@ class TransactionControllerIT extends AbstractIntegrationTest {
                         {"type": "EXPENSE", "amount": 75.00, "description": "Dinner", "categoryId": %d, "transactionDate": "2026-06-22"}
                         """.formatted(categoryId))
                 .when()
-                .put("/transactions/{id}", transactionId)
+                .put("/api/v1/transactions/{id}", transactionId)
                 .then()
                 .statusCode(200)
                 .body("description", equalTo("Dinner"));
@@ -133,7 +133,7 @@ class TransactionControllerIT extends AbstractIntegrationTest {
                         {"type": "EXPENSE", "amount": 75.00, "description": "Dinner", "categoryId": %d, "transactionDate": "2026-06-22"}
                         """.formatted(categoryId))
                 .when()
-                .put("/transactions/{id}", 999999L)
+                .put("/api/v1/transactions/{id}", 999999L)
                 .then()
                 .statusCode(404);
     }
@@ -146,13 +146,13 @@ class TransactionControllerIT extends AbstractIntegrationTest {
                 .body("""
                         {"type": "EXPENSE", "amount": 50.00, "description": "Lunch", "categoryId": %d, "transactionDate": "2026-06-22"}
                         """.formatted(categoryId))
-                .post("/transactions")
+                .post("/api/v1/transactions")
                 .jsonPath()
                 .getLong("id");
 
         given()
                 .when()
-                .delete("/transactions/{id}", transactionId)
+                .delete("/api/v1/transactions/{id}", transactionId)
                 .then()
                 .statusCode(204);
     }
@@ -161,7 +161,7 @@ class TransactionControllerIT extends AbstractIntegrationTest {
     void shouldReturn404WhenDeletingNonExistentTransaction() {
         given()
                 .when()
-                .delete("/transactions/{id}", 999999L)
+                .delete("/api/v1/transactions/{id}", 999999L)
                 .then()
                 .statusCode(404);
     }
@@ -172,7 +172,7 @@ class TransactionControllerIT extends AbstractIntegrationTest {
                 .contentType("application/json")
                 .body("{ this is not valid json")
                 .when()
-                .post("/transactions")
+                .post("/api/v1/transactions")
                 .then()
                 .statusCode(400);
     }

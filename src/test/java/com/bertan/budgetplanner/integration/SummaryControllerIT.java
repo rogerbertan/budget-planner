@@ -11,7 +11,7 @@ class SummaryControllerIT extends AbstractIntegrationTest {
         return given()
                 .contentType("application/json")
                 .body("{\"name\": \"%s\", \"type\": \"%s\"}".formatted(name, type))
-                .post("/categories")
+                .post("/api/v1/categories")
                 .jsonPath()
                 .getLong("id");
     }
@@ -22,7 +22,7 @@ class SummaryControllerIT extends AbstractIntegrationTest {
                 .body("""
                         {"type": "%s", "amount": %s, "description": "Item", "categoryId": %d, "transactionDate": "%s"}
                         """.formatted(type, amount, categoryId, date))
-                .post("/transactions");
+                .post("/api/v1/transactions");
     }
 
     @Test
@@ -34,7 +34,7 @@ class SummaryControllerIT extends AbstractIntegrationTest {
 
         given()
                 .when()
-                .get("/summary/balance")
+                .get("/api/v1/summary/balance")
                 .then()
                 .statusCode(200)
                 .body("balance", equalTo(700.00f));
@@ -49,7 +49,7 @@ class SummaryControllerIT extends AbstractIntegrationTest {
 
         given()
                 .when()
-                .get("/summary/monthly?month=6&year=2026")
+                .get("/api/v1/summary/monthly?month=6&year=2026")
                 .then()
                 .statusCode(200)
                 .body("totalIncome", equalTo(1000.00f))
@@ -63,7 +63,7 @@ class SummaryControllerIT extends AbstractIntegrationTest {
 
         given()
                 .when()
-                .get("/summary/categories?month=6&year=2026")
+                .get("/api/v1/summary/categories?month=6&year=2026")
                 .then()
                 .statusCode(200)
                 .body("[0].category", equalTo("Food"));
@@ -73,7 +73,7 @@ class SummaryControllerIT extends AbstractIntegrationTest {
     void shouldReturn400WhenMonthIsNotNumeric() {
         given()
                 .when()
-                .get("/summary/monthly?month=abc&year=2026")
+                .get("/api/v1/summary/monthly?month=abc&year=2026")
                 .then()
                 .statusCode(400);
     }
@@ -82,7 +82,7 @@ class SummaryControllerIT extends AbstractIntegrationTest {
     void shouldReturn400WhenRequiredParameterIsMissing() {
         given()
                 .when()
-                .get("/summary/monthly?year=2026")
+                .get("/api/v1/summary/monthly?year=2026")
                 .then()
                 .statusCode(400);
     }
@@ -91,7 +91,7 @@ class SummaryControllerIT extends AbstractIntegrationTest {
     void shouldReturnOkOnHealthCheck() {
         given()
                 .when()
-                .get("/health")
+                .get("/api/v1/health")
                 .then()
                 .statusCode(200)
                 .body(equalTo("OK"));
