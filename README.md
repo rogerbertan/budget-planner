@@ -69,6 +69,10 @@ Cobertura medida com JaCoCo (`mvn verify`), excluindo pacotes de `dto`, `excepti
 
 ![Relatório de cobertura JaCoCo](docs/img/tests-report.png)
 
+## Documentação da API
+
+A documentação completa dos endpoints está disponível via Swagger em `http://localhost:8080/swagger-ui/index.html`.
+
 ## Endpoints principais
 
 - `GET /api/v1/health`: status da API
