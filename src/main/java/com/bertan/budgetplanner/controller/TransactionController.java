@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/transactions")
-public class TransactionController {
+public class TransactionController implements TransactionApi {
 
     private final TransactionService transactionService;
 
