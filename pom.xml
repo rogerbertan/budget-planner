@@ -191,6 +191,7 @@
 								<exclude>com/bertan/budgetplanner/dto/**</exclude>
 								<exclude>com/bertan/budgetplanner/exception/**</exclude>
 								<exclude>com/bertan/budgetplanner/config/**</exclude>
+								<exclude>com/bertan/budgetplanner/BudgetPlannerApplication.class</exclude>
 							</excludes>
 						</configuration>
 					</execution>
