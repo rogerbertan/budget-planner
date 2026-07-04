@@ -58,12 +58,18 @@ O pipeline de CD autentica na AWS via OIDC em vez de um Access Key fixo guardado
 
 Resumo: OIDC foi escolhido pela ausência de segredo de longa duração e por restringir o acesso por repositório e branch, sendo também a prática hoje recomendada pela AWS e pelo GitHub.
 
+### Por que JWT stateless e não sessão?
+
+Cada request autenticada carrega um token JWT (HMAC256), validado a cada chamada por um filtro próprio (`SecurityFilter`) antes de chegar aos controllers, sem sessão guardada em lugar nenhum. Isso evita sticky session ou um store de sessão compartilhado entre as instâncias do ECS quando a API escala horizontalmente atrás do ALB, e mantém a autenticação no mesmo modelo do resto da infra, que já é stateless (com exceção do RDS).
+
+Senha nunca é salva em texto puro, vai hash com BCrypt. Só `/auth/register` e `/auth/login` ficam abertos, todo o resto exige um Bearer token válido no header `Authorization`.
+
 ## Testes
 
 Dois níveis de teste, separados por sufixo (`*Test` vs `*IT`):
 
-- **Unitários** — `domain`, `service` e `mapper` testados isoladamente (JUnit 5 + Mockito), sem subir contexto Spring.
-- **Integração** — `*ControllerIT` sobem o contexto Spring completo (`@SpringBootTest`, porta aleatória) e usam [Testcontainers](https://testcontainers.com/) para provisionar um PostgreSQL real em container a cada execução, eliminando divergência entre teste e banco de produção. As chamadas HTTP aos endpoints são feitas com [REST Assured](https://rest-assured.io/). Cada teste limpa as tabelas (`TRUNCATE ... RESTART IDENTITY CASCADE`) no `@AfterEach` para isolamento entre casos.
+- **Unitários** - `domain`, `service` e `mapper` testados isoladamente (JUnit 5 + Mockito), sem subir contexto Spring.
+- **Integração** - `*ControllerIT` sobem o contexto Spring completo (`@SpringBootTest`, porta aleatória) e usam [Testcontainers](https://testcontainers.com/) para provisionar um PostgreSQL real em container a cada execução, eliminando divergência entre teste e banco de produção. As chamadas HTTP aos endpoints são feitas com [REST Assured](https://rest-assured.io/). Cada teste limpa as tabelas (`TRUNCATE ... RESTART IDENTITY CASCADE`) no `@AfterEach` para isolamento entre casos.
 
 Cobertura medida com JaCoCo (`mvn verify`), excluindo pacotes de `dto`, `exception` e `config`:
 
@@ -76,6 +82,8 @@ A documentação completa dos endpoints está disponível via Swagger em `http:/
 ## Endpoints principais
 
 - `GET /api/v1/health`: status da API
+- `POST /api/v1/auth/register`: cria usuário
+- `POST /api/v1/auth/login`: autentica e retorna token JWT
 - `GET/POST/PUT/DELETE /api/v1/categories`: categorias (tipo `INCOME` ou `EXPENSE`)
 - `GET/POST/PUT/DELETE /api/v1/transactions`: transações (paginado)
 - `GET /api/v1/summary/balance`: saldo geral
