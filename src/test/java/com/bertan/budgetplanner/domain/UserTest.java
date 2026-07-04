@@ -2,6 +2,7 @@ package com.bertan.budgetplanner.domain;
 
 import com.bertan.budgetplanner.domain.user.User;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,7 +28,9 @@ class UserTest {
         assertThat(user.isAccountNonExpired()).isTrue();
         assertThat(user.isAccountNonLocked()).isTrue();
         assertThat(user.isCredentialsNonExpired()).isTrue();
-        assertThat(user.getAuthorities()).isEmpty();
+        assertThat(user.getAuthorities())
+                .extracting(GrantedAuthority::getAuthority)
+                .containsExactly("ROLE_USER");
     }
 
     @Test
