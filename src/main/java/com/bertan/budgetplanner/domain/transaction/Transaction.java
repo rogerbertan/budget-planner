@@ -2,6 +2,7 @@ package com.bertan.budgetplanner.domain.transaction;
 
 import com.bertan.budgetplanner.domain.category.Category;
 import com.bertan.budgetplanner.domain.category.Type;
+import com.bertan.budgetplanner.domain.user.User;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -31,17 +32,23 @@ public class Transaction {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     @Column(name = "transaction_date", nullable = false)
     private LocalDate transactionDate;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    public Transaction(Type type, BigDecimal amount, String description, Category category, LocalDate transactionDate) {
+    public Transaction(Type type, BigDecimal amount, String description,
+                       Category category, User user, LocalDate transactionDate) {
         this.type = type;
         this.amount = amount;
         this.description = description;
         this.category = category;
+        this.user = user;
         this.transactionDate = transactionDate;
     }
 
@@ -98,6 +105,14 @@ public class Transaction {
 
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public LocalDate getTransactionDate() {

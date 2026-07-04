@@ -1,5 +1,6 @@
 package com.bertan.budgetplanner.controller;
 
+import com.bertan.budgetplanner.config.JWTUserData;
 import com.bertan.budgetplanner.dto.BalanceResponse;
 import com.bertan.budgetplanner.dto.CategoriesSummaryResponse;
 import com.bertan.budgetplanner.dto.ErrorResponse;
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.List;
 
@@ -38,7 +40,7 @@ public interface SummaryApi {
                     )
             }
     )
-    ResponseEntity<BalanceResponse> getBalanceSummary();
+    ResponseEntity<BalanceResponse> getBalanceSummary(@AuthenticationPrincipal JWTUserData principal);
 
     @Operation(
             summary = "Resumo mensal",
@@ -66,7 +68,8 @@ public interface SummaryApi {
     )
     ResponseEntity<MonthlySummaryResponse> getMonthlySummary(
             @Parameter(description = "Mês de referência (1-12)", example = "7") int month,
-            @Parameter(description = "Ano de referência", example = "2026") int year);
+            @Parameter(description = "Ano de referência", example = "2026") int year,
+            @AuthenticationPrincipal JWTUserData principal);
 
     @Operation(
             summary = "Resumo por categoria",
@@ -94,5 +97,6 @@ public interface SummaryApi {
     )
     ResponseEntity<List<CategoriesSummaryResponse>> getCategoriesSummary(
             @Parameter(description = "Mês de referência (1-12)", example = "7") int month,
-            @Parameter(description = "Ano de referência", example = "2026") int year);
+            @Parameter(description = "Ano de referência", example = "2026") int year,
+            @AuthenticationPrincipal JWTUserData principal);
 }

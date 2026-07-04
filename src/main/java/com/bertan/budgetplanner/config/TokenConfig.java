@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.bertan.budgetplanner.domain.user.Role;
 import com.bertan.budgetplanner.domain.user.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,7 @@ public class TokenConfig {
 
         return JWT.create()
                 .withClaim("userId", user.getId())
+                .withClaim("role", user.getRole().name())
                 .withSubject(user.getUsername())
                 .withExpiresAt(Instant.now().plusSeconds(86400))
                 .withIssuedAt(Instant.now())
@@ -40,7 +42,8 @@ public class TokenConfig {
 
             return Optional.of(new JWTUserData(
                     decode.getClaim("userId").asLong(),
-                    decode.getSubject()));
+                    decode.getSubject(),
+                    Role.valueOf(decode.getClaim("role").asString())));
 
         } catch (JWTVerificationException e) {
             return Optional.empty();

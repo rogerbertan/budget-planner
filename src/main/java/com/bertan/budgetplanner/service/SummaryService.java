@@ -1,5 +1,6 @@
 package com.bertan.budgetplanner.service;
 
+import com.bertan.budgetplanner.config.JWTUserData;
 import com.bertan.budgetplanner.dto.BalanceResponse;
 import com.bertan.budgetplanner.dto.CategoriesSummaryResponse;
 import com.bertan.budgetplanner.dto.MonthlySummaryResponse;
@@ -18,21 +19,21 @@ public class SummaryService {
         this.transactionService = transactionService;
     }
 
-    public BalanceResponse getBalanceSummary() {
+    public BalanceResponse getBalanceSummary(JWTUserData principal) {
 
-        BigDecimal totalIncome = transactionService.getTotalIncome();
-        BigDecimal totalExpense = transactionService.getTotalExpense();
+        BigDecimal totalIncome = transactionService.getTotalIncome(principal);
+        BigDecimal totalExpense = transactionService.getTotalExpense(principal);
         BigDecimal netBalance = totalIncome.subtract(totalExpense)
                 .setScale(2, RoundingMode.HALF_UP);
 
         return new BalanceResponse(netBalance);
     }
 
-    public MonthlySummaryResponse getMonthlySummary(int month, int year) {
+    public MonthlySummaryResponse getMonthlySummary(int month, int year, JWTUserData principal) {
 
-        BigDecimal monthlyIncome = transactionService.getMonthlyIncome(month, year)
+        BigDecimal monthlyIncome = transactionService.getMonthlyIncome(month, year, principal)
                 .setScale(2, RoundingMode.HALF_UP);
-        BigDecimal monthlyExpense = transactionService.getMonthlyExpense(month, year)
+        BigDecimal monthlyExpense = transactionService.getMonthlyExpense(month, year, principal)
                 .setScale(2, RoundingMode.HALF_UP);
         BigDecimal monthlyNetBalance = monthlyIncome.subtract(monthlyExpense)
                 .setScale(2, RoundingMode.HALF_UP);
@@ -40,9 +41,9 @@ public class SummaryService {
         return new MonthlySummaryResponse(monthlyIncome, monthlyExpense, monthlyNetBalance);
     }
 
-    public List<CategoriesSummaryResponse> getCategoriesSummary(int month, int year) {
+    public List<CategoriesSummaryResponse> getCategoriesSummary(int month, int year, JWTUserData principal) {
 
-        List<CategoriesSummaryResponse> categoriesSummaries = transactionService.getCategoriesSummaries(month, year);
+        List<CategoriesSummaryResponse> categoriesSummaries = transactionService.getCategoriesSummaries(month, year, principal);
 
         return categoriesSummaries.stream()
                 .map(category -> new CategoriesSummaryResponse(

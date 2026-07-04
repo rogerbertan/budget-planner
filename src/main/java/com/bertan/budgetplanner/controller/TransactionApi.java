@@ -1,5 +1,6 @@
 package com.bertan.budgetplanner.controller;
 
+import com.bertan.budgetplanner.config.JWTUserData;
 import com.bertan.budgetplanner.dto.CreateTransactionRequest;
 import com.bertan.budgetplanner.dto.ErrorResponse;
 import com.bertan.budgetplanner.dto.TransactionResponse;
@@ -14,6 +15,7 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @Tag(
@@ -39,7 +41,7 @@ public interface TransactionApi {
                     )
             }
     )
-    ResponseEntity<Page<TransactionResponse>> getAllTransactions(Pageable pageable);
+    ResponseEntity<Page<TransactionResponse>> getAllTransactions(Pageable pageable, @AuthenticationPrincipal JWTUserData principal);
 
     @Operation(
             summary = "Buscar transação por id",
@@ -65,7 +67,7 @@ public interface TransactionApi {
                     )
             }
     )
-    ResponseEntity<TransactionResponse> getTransactionById(Long id);
+    ResponseEntity<TransactionResponse> getTransactionById(Long id, @AuthenticationPrincipal JWTUserData principal);
 
     @Operation(
             summary = "Criar transação",
@@ -120,7 +122,8 @@ public interface TransactionApi {
                             )
                     )
             )
-            CreateTransactionRequest requestDTO);
+            CreateTransactionRequest requestDTO,
+            @AuthenticationPrincipal JWTUserData principal);
 
     @Operation(
             summary = "Atualizar transação",
@@ -176,7 +179,8 @@ public interface TransactionApi {
                             )
                     )
             )
-            CreateTransactionRequest requestDTO);
+            CreateTransactionRequest requestDTO,
+            @AuthenticationPrincipal JWTUserData principal);
 
     @Operation(
             summary = "Remover transação",
@@ -199,5 +203,5 @@ public interface TransactionApi {
                     )
             }
     )
-    ResponseEntity<Void> deleteTransaction(Long id);
+    ResponseEntity<Void> deleteTransaction(Long id, @AuthenticationPrincipal JWTUserData principal);
 }
