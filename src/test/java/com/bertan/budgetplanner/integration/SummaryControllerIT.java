@@ -96,4 +96,51 @@ class SummaryControllerIT extends AbstractIntegrationTest {
                 .statusCode(200)
                 .body(equalTo("OK"));
     }
+
+    @Test
+    void shouldOnlyIncludeOwnTransactionsInBalanceForRegularUser() {
+        Long incomeCategory = createCategory("Salary", "INCOME");
+        createTransaction("INCOME", "1000.00", incomeCategory, "2026-06-22");
+
+        AbstractIntegrationTest.TestUser otherUser = registerAndLogin();
+
+        given()
+                .when()
+                .get("/api/v1/summary/balance")
+                .then()
+                .statusCode(200)
+                .body("balance", equalTo(1000.00f));
+
+        asUser(otherUser.token())
+                .when()
+                .get("/api/v1/summary/balance")
+                .then()
+                .statusCode(200)
+                .body("balance", equalTo(0.00f));
+    }
+
+    @Test
+    void shouldIncludeAllUsersTransactionsInBalanceForAdmin() {
+        Long incomeCategory = createCategory("Salary", "INCOME");
+        createTransaction("INCOME", "1000.00", incomeCategory, "2026-06-22");
+
+        String otherEmail = register();
+        String otherToken = tokenFor(otherEmail);
+        asUser(otherToken)
+                .contentType("application/json")
+                .body("""
+                        {"type": "EXPENSE", "amount": 200.00, "description": "Item", "categoryId": %d, "transactionDate": "2026-06-22"}
+                        """.formatted(incomeCategory))
+                .post("/api/v1/transactions");
+
+        promoteToAdmin(otherEmail);
+        String adminToken = tokenFor(otherEmail);
+
+        asUser(adminToken)
+                .when()
+                .get("/api/v1/summary/balance")
+                .then()
+                .statusCode(200)
+                .body("balance", equalTo(800.00f));
+    }
 }

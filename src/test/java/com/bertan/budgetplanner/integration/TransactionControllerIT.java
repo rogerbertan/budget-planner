@@ -176,4 +176,115 @@ class TransactionControllerIT extends AbstractIntegrationTest {
                 .then()
                 .statusCode(400);
     }
+
+    @Test
+    void shouldReturn404WhenUserTriesToGetAnotherUsersTransaction() {
+        Long categoryId = createCategory("Food", "EXPENSE");
+        Long transactionId = given()
+                .contentType("application/json")
+                .body("""
+                        {"type": "EXPENSE", "amount": 50.00, "description": "Lunch", "categoryId": %d, "transactionDate": "2026-06-22"}
+                        """.formatted(categoryId))
+                .post("/api/v1/transactions")
+                .jsonPath()
+                .getLong("id");
+
+        AbstractIntegrationTest.TestUser otherUser = registerAndLogin();
+
+        asUser(otherUser.token())
+                .when()
+                .get("/api/v1/transactions/{id}", transactionId)
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    void shouldReturn404WhenUserTriesToUpdateAnotherUsersTransaction() {
+        Long categoryId = createCategory("Food", "EXPENSE");
+        Long transactionId = given()
+                .contentType("application/json")
+                .body("""
+                        {"type": "EXPENSE", "amount": 50.00, "description": "Lunch", "categoryId": %d, "transactionDate": "2026-06-22"}
+                        """.formatted(categoryId))
+                .post("/api/v1/transactions")
+                .jsonPath()
+                .getLong("id");
+
+        AbstractIntegrationTest.TestUser otherUser = registerAndLogin();
+
+        asUser(otherUser.token())
+                .contentType("application/json")
+                .body("""
+                        {"type": "EXPENSE", "amount": 75.00, "description": "Dinner", "categoryId": %d, "transactionDate": "2026-06-22"}
+                        """.formatted(categoryId))
+                .when()
+                .put("/api/v1/transactions/{id}", transactionId)
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    void shouldReturn404WhenUserTriesToDeleteAnotherUsersTransaction() {
+        Long categoryId = createCategory("Food", "EXPENSE");
+        Long transactionId = given()
+                .contentType("application/json")
+                .body("""
+                        {"type": "EXPENSE", "amount": 50.00, "description": "Lunch", "categoryId": %d, "transactionDate": "2026-06-22"}
+                        """.formatted(categoryId))
+                .post("/api/v1/transactions")
+                .jsonPath()
+                .getLong("id");
+
+        AbstractIntegrationTest.TestUser otherUser = registerAndLogin();
+
+        asUser(otherUser.token())
+                .when()
+                .delete("/api/v1/transactions/{id}", transactionId)
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    void shouldNotListOtherUsersTransactionsWhenAuthenticatedAsRegularUser() {
+        Long categoryId = createCategory("Food", "EXPENSE");
+        given()
+                .contentType("application/json")
+                .body("""
+                        {"type": "EXPENSE", "amount": 50.00, "description": "Lunch", "categoryId": %d, "transactionDate": "2026-06-22"}
+                        """.formatted(categoryId))
+                .post("/api/v1/transactions");
+
+        AbstractIntegrationTest.TestUser otherUser = registerAndLogin();
+
+        asUser(otherUser.token())
+                .when()
+                .get("/api/v1/transactions")
+                .then()
+                .statusCode(200)
+                .body("content", hasSize(0))
+                .body("totalElements", equalTo(0));
+    }
+
+    @Test
+    void shouldListAllUsersTransactionsWhenAuthenticatedAsAdmin() {
+        Long categoryId = createCategory("Food", "EXPENSE");
+        given()
+                .contentType("application/json")
+                .body("""
+                        {"type": "EXPENSE", "amount": 50.00, "description": "Lunch", "categoryId": %d, "transactionDate": "2026-06-22"}
+                        """.formatted(categoryId))
+                .post("/api/v1/transactions");
+
+        String adminEmail = register();
+        promoteToAdmin(adminEmail);
+        String adminToken = tokenFor(adminEmail);
+
+        asUser(adminToken)
+                .when()
+                .get("/api/v1/transactions")
+                .then()
+                .statusCode(200)
+                .body("content", hasSize(1))
+                .body("totalElements", equalTo(1));
+    }
 }

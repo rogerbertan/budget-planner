@@ -1,5 +1,7 @@
 package com.bertan.budgetplanner.service;
 
+import com.bertan.budgetplanner.config.JWTUserData;
+import com.bertan.budgetplanner.domain.user.Role;
 import com.bertan.budgetplanner.dto.BalanceResponse;
 import com.bertan.budgetplanner.dto.CategoriesSummaryResponse;
 import com.bertan.budgetplanner.dto.MonthlySummaryResponse;
@@ -18,6 +20,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class SummaryServiceTest {
 
+    private static final JWTUserData USER = new JWTUserData(1L, "user@test.com", Role.USER);
+
     @Mock
     private TransactionService transactionService;
 
@@ -26,50 +30,50 @@ class SummaryServiceTest {
 
     @Test
     void shouldCalculatePositiveBalance() {
-        when(transactionService.getTotalIncome()).thenReturn(BigDecimal.valueOf(1000));
-        when(transactionService.getTotalExpense()).thenReturn(BigDecimal.valueOf(400));
+        when(transactionService.getTotalIncome(USER)).thenReturn(BigDecimal.valueOf(1000));
+        when(transactionService.getTotalExpense(USER)).thenReturn(BigDecimal.valueOf(400));
 
-        BalanceResponse result = summaryService.getBalanceSummary();
+        BalanceResponse result = summaryService.getBalanceSummary(USER);
 
         assertThat(result.balance()).isEqualByComparingTo(BigDecimal.valueOf(600).setScale(2));
     }
 
     @Test
     void shouldCalculateNegativeBalanceWhenExpensesExceedIncome() {
-        when(transactionService.getTotalIncome()).thenReturn(BigDecimal.valueOf(100));
-        when(transactionService.getTotalExpense()).thenReturn(BigDecimal.valueOf(400));
+        when(transactionService.getTotalIncome(USER)).thenReturn(BigDecimal.valueOf(100));
+        when(transactionService.getTotalExpense(USER)).thenReturn(BigDecimal.valueOf(400));
 
-        BalanceResponse result = summaryService.getBalanceSummary();
+        BalanceResponse result = summaryService.getBalanceSummary(USER);
 
         assertThat(result.balance()).isEqualByComparingTo(BigDecimal.valueOf(-300).setScale(2));
     }
 
     @Test
     void shouldCalculateZeroBalanceWhenNoTransactionsExist() {
-        when(transactionService.getTotalIncome()).thenReturn(BigDecimal.ZERO);
-        when(transactionService.getTotalExpense()).thenReturn(BigDecimal.ZERO);
+        when(transactionService.getTotalIncome(USER)).thenReturn(BigDecimal.ZERO);
+        when(transactionService.getTotalExpense(USER)).thenReturn(BigDecimal.ZERO);
 
-        BalanceResponse result = summaryService.getBalanceSummary();
+        BalanceResponse result = summaryService.getBalanceSummary(USER);
 
         assertThat(result.balance()).isEqualByComparingTo(BigDecimal.ZERO.setScale(2));
     }
 
     @Test
     void shouldRoundBalanceToTwoDecimalPlaces() {
-        when(transactionService.getTotalIncome()).thenReturn(new BigDecimal("100.005"));
-        when(transactionService.getTotalExpense()).thenReturn(BigDecimal.ZERO);
+        when(transactionService.getTotalIncome(USER)).thenReturn(new BigDecimal("100.005"));
+        when(transactionService.getTotalExpense(USER)).thenReturn(BigDecimal.ZERO);
 
-        BalanceResponse result = summaryService.getBalanceSummary();
+        BalanceResponse result = summaryService.getBalanceSummary(USER);
 
         assertThat(result.balance()).isEqualByComparingTo(new BigDecimal("100.01"));
     }
 
     @Test
     void shouldCalculateMonthlySummary() {
-        when(transactionService.getMonthlyIncome(6, 2026)).thenReturn(BigDecimal.valueOf(500));
-        when(transactionService.getMonthlyExpense(6, 2026)).thenReturn(BigDecimal.valueOf(200));
+        when(transactionService.getMonthlyIncome(6, 2026, USER)).thenReturn(BigDecimal.valueOf(500));
+        when(transactionService.getMonthlyExpense(6, 2026, USER)).thenReturn(BigDecimal.valueOf(200));
 
-        MonthlySummaryResponse result = summaryService.getMonthlySummary(6, 2026);
+        MonthlySummaryResponse result = summaryService.getMonthlySummary(6, 2026, USER);
 
         assertThat(result.totalIncome()).isEqualByComparingTo(BigDecimal.valueOf(500).setScale(2));
         assertThat(result.totalExpense()).isEqualByComparingTo(BigDecimal.valueOf(200).setScale(2));
@@ -78,10 +82,10 @@ class SummaryServiceTest {
 
     @Test
     void shouldCalculateMonthlySummaryWithNoActivity() {
-        when(transactionService.getMonthlyIncome(1, 2026)).thenReturn(BigDecimal.ZERO);
-        when(transactionService.getMonthlyExpense(1, 2026)).thenReturn(BigDecimal.ZERO);
+        when(transactionService.getMonthlyIncome(1, 2026, USER)).thenReturn(BigDecimal.ZERO);
+        when(transactionService.getMonthlyExpense(1, 2026, USER)).thenReturn(BigDecimal.ZERO);
 
-        MonthlySummaryResponse result = summaryService.getMonthlySummary(1, 2026);
+        MonthlySummaryResponse result = summaryService.getMonthlySummary(1, 2026, USER);
 
         assertThat(result.totalIncome()).isEqualByComparingTo(BigDecimal.ZERO.setScale(2));
         assertThat(result.totalExpense()).isEqualByComparingTo(BigDecimal.ZERO.setScale(2));
@@ -92,9 +96,9 @@ class SummaryServiceTest {
     void shouldReturnCategoriesSummaryRoundedToTwoDecimals() {
         CategoriesSummaryResponse raw = new CategoriesSummaryResponse(
                 "Food", new BigDecimal("100.005"), new BigDecimal("50.001"));
-        when(transactionService.getCategoriesSummaries(6, 2026)).thenReturn(List.of(raw));
+        when(transactionService.getCategoriesSummaries(6, 2026, USER)).thenReturn(List.of(raw));
 
-        List<CategoriesSummaryResponse> result = summaryService.getCategoriesSummary(6, 2026);
+        List<CategoriesSummaryResponse> result = summaryService.getCategoriesSummary(6, 2026, USER);
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).category()).isEqualTo("Food");
@@ -104,9 +108,9 @@ class SummaryServiceTest {
 
     @Test
     void shouldReturnEmptyCategoriesSummaryWhenNoneExist() {
-        when(transactionService.getCategoriesSummaries(6, 2026)).thenReturn(List.of());
+        when(transactionService.getCategoriesSummaries(6, 2026, USER)).thenReturn(List.of());
 
-        List<CategoriesSummaryResponse> result = summaryService.getCategoriesSummary(6, 2026);
+        List<CategoriesSummaryResponse> result = summaryService.getCategoriesSummary(6, 2026, USER);
 
         assertThat(result).isEmpty();
     }

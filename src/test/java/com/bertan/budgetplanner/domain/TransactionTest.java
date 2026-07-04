@@ -18,7 +18,7 @@ class TransactionTest {
     void shouldCreateTransactionWithConstructorArgs() {
         Category category = new Category("Food", Type.EXPENSE);
         LocalDate date = LocalDate.now();
-        Transaction transaction = new Transaction(Type.EXPENSE, BigDecimal.TEN, "Lunch", category, date);
+        Transaction transaction = new Transaction(Type.EXPENSE, BigDecimal.TEN, "Lunch", category, null, date);
 
         assertThat(transaction.getType()).isEqualTo(Type.EXPENSE);
         assertThat(transaction.getAmount()).isEqualTo(BigDecimal.TEN);
@@ -31,14 +31,14 @@ class TransactionTest {
 
     @Test
     void shouldAllowNullCategory() {
-        Transaction transaction = new Transaction(Type.EXPENSE, BigDecimal.TEN, "Lunch", null, LocalDate.now());
+        Transaction transaction = new Transaction(Type.EXPENSE, BigDecimal.TEN, "Lunch", null, null, LocalDate.now());
 
         assertThat(transaction.getCategory()).isNull();
     }
 
     @Test
     void shouldSetCreatedAtWhenOnCreateIsInvoked() {
-        Transaction transaction = new Transaction(Type.EXPENSE, BigDecimal.TEN, "Lunch", null, LocalDate.now());
+        Transaction transaction = new Transaction(Type.EXPENSE, BigDecimal.TEN, "Lunch", null, null, LocalDate.now());
 
         ReflectionTestUtils.invokeMethod(transaction, "onCreate");
 
@@ -48,8 +48,8 @@ class TransactionTest {
 
     @Test
     void shouldBeEqualWhenIdsAreEqual() {
-        Transaction transaction1 = new Transaction(Type.EXPENSE, BigDecimal.TEN, "Lunch", null, LocalDate.now());
-        Transaction transaction2 = new Transaction(Type.INCOME, BigDecimal.ONE, "Salary", null, LocalDate.now());
+        Transaction transaction1 = new Transaction(Type.EXPENSE, BigDecimal.TEN, "Lunch", null, null, LocalDate.now());
+        Transaction transaction2 = new Transaction(Type.INCOME, BigDecimal.ONE, "Salary", null, null, LocalDate.now());
         ReflectionTestUtils.setField(transaction1, "id", 1L);
         ReflectionTestUtils.setField(transaction2, "id", 1L);
 
@@ -59,8 +59,8 @@ class TransactionTest {
 
     @Test
     void shouldNotBeEqualWhenIdsAreDifferent() {
-        Transaction transaction1 = new Transaction(Type.EXPENSE, BigDecimal.TEN, "Lunch", null, LocalDate.now());
-        Transaction transaction2 = new Transaction(Type.EXPENSE, BigDecimal.TEN, "Lunch", null, LocalDate.now());
+        Transaction transaction1 = new Transaction(Type.EXPENSE, BigDecimal.TEN, "Lunch", null, null, LocalDate.now());
+        Transaction transaction2 = new Transaction(Type.EXPENSE, BigDecimal.TEN, "Lunch", null, null, LocalDate.now());
         ReflectionTestUtils.setField(transaction1, "id", 1L);
         ReflectionTestUtils.setField(transaction2, "id", 2L);
 
@@ -69,22 +69,22 @@ class TransactionTest {
 
     @Test
     void shouldNotBeEqualToNull() {
-        Transaction transaction = new Transaction(Type.EXPENSE, BigDecimal.TEN, "Lunch", null, LocalDate.now());
+        Transaction transaction = new Transaction(Type.EXPENSE, BigDecimal.TEN, "Lunch", null, null, LocalDate.now());
 
         assertThat(transaction).isNotEqualTo(null);
     }
 
     @Test
     void shouldNotBeEqualToDifferentClass() {
-        Transaction transaction = new Transaction(Type.EXPENSE, BigDecimal.TEN, "Lunch", null, LocalDate.now());
+        Transaction transaction = new Transaction(Type.EXPENSE, BigDecimal.TEN, "Lunch", null, null, LocalDate.now());
 
         assertThat(transaction).isNotEqualTo("not a transaction");
     }
 
     @Test
     void shouldHaveConsistentHashCodeWhenIdIsNull() {
-        Transaction transaction1 = new Transaction(Type.EXPENSE, BigDecimal.TEN, "Lunch", null, LocalDate.now());
-        Transaction transaction2 = new Transaction(Type.INCOME, BigDecimal.ONE, "Salary", null, LocalDate.now());
+        Transaction transaction1 = new Transaction(Type.EXPENSE, BigDecimal.TEN, "Lunch", null, null, LocalDate.now());
+        Transaction transaction2 = new Transaction(Type.INCOME, BigDecimal.ONE, "Salary", null, null, LocalDate.now());
 
         assertThat(transaction1.hashCode()).isEqualTo(transaction2.hashCode());
     }

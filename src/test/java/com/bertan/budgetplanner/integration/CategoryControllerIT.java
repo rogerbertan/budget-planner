@@ -104,4 +104,19 @@ class CategoryControllerIT extends AbstractIntegrationTest {
                 .then()
                 .statusCode(400);
     }
+
+    @Test
+    void shouldReturn403WhenNonAdminUserTriesToCreateCategory() {
+        AbstractIntegrationTest.TestUser regularUser = registerAndLogin();
+
+        asUser(regularUser.token())
+                .contentType("application/json")
+                .body("""
+                        {"name": "Salary", "type": "INCOME"}
+                        """)
+                .when()
+                .post("/api/v1/categories")
+                .then()
+                .statusCode(403);
+    }
 }

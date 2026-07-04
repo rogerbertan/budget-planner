@@ -22,7 +22,7 @@ class TransactionMapperTest {
     void shouldMapTransactionToDtoWithCategory() {
         Category category = new Category("Food", Type.EXPENSE);
         ReflectionTestUtils.setField(category, "id", 5L);
-        Transaction transaction = new Transaction(Type.EXPENSE, BigDecimal.TEN, "Lunch", category, LocalDate.now());
+        Transaction transaction = new Transaction(Type.EXPENSE, BigDecimal.TEN, "Lunch", category, null, LocalDate.now());
         ReflectionTestUtils.setField(transaction, "id", 1L);
 
         TransactionResponse dto = transactionMapper.toDto(transaction);
@@ -37,7 +37,7 @@ class TransactionMapperTest {
 
     @Test
     void shouldMapTransactionToDtoWhenCategoryIsNull() {
-        Transaction transaction = new Transaction(Type.EXPENSE, BigDecimal.TEN, "Lunch", null, LocalDate.now());
+        Transaction transaction = new Transaction(Type.EXPENSE, BigDecimal.TEN, "Lunch", null, null, LocalDate.now());
 
         TransactionResponse dto = transactionMapper.toDto(transaction);
 
@@ -61,8 +61,8 @@ class TransactionMapperTest {
 
     @Test
     void shouldMapListOfTransactionsToDtoList() {
-        Transaction transaction1 = new Transaction(Type.EXPENSE, BigDecimal.TEN, "Lunch", null, LocalDate.now());
-        Transaction transaction2 = new Transaction(Type.INCOME, BigDecimal.ONE, "Salary", null, LocalDate.now());
+        Transaction transaction1 = new Transaction(Type.EXPENSE, BigDecimal.TEN, "Lunch", null, null, LocalDate.now());
+        Transaction transaction2 = new Transaction(Type.INCOME, BigDecimal.ONE, "Salary", null, null, LocalDate.now());
 
         List<TransactionResponse> result = transactionMapper.toDtoList(List.of(transaction1, transaction2));
 
