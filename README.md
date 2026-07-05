@@ -64,6 +64,10 @@ Cada request autenticada carrega um token JWT (HMAC256), validado a cada chamada
 
 Senha nunca é salva em texto puro, vai hash com BCrypt. Só `/auth/register` e `/auth/login` ficam abertos, todo o resto exige um Bearer token válido no header `Authorization`.
 
+### Isolamento de dados por usuário
+
+O `userId` vem dentro do JWT, e cada usuário só enxerga (e só altera) as próprias transações e o próprio saldo. Isso é feito na query, não com um filtro aplicado depois de buscar tudo no banco. Quem tem papel `ADMIN` foge dessa regra e vê os dados de qualquer usuário.
+
 ## Testes
 
 Dois níveis de teste, separados por sufixo (`*Test` vs `*IT`):
