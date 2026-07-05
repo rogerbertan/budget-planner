@@ -44,6 +44,7 @@ public abstract class AbstractIntegrationTest {
 
     @BeforeEach
     void setUpRestAssured() {
+        RestAssured.reset();
         RestAssured.port = port;
 
         String email = register();
