@@ -42,14 +42,30 @@ Acesso: AWS Console → CloudWatch → Dashboards → `budgetplanner-dashboard`.
 
 ## Custos
 
-Para o volume desta aplicação (2 tasks Fargate, 1 ALB, 1 RDS `db.t4g.micro`), o custo de observabilidade é marginal:
+### Infraestrutura (Fargate, RDS, ALB, NAT Gateway)
+
+Estimativa feita na [AWS Pricing Calculator](https://calculator.aws/#/addService), região `us-east-1`, para a configuração real deste projeto (2 tasks Fargate de 0.5 vCPU/1GB, RDS `db.t4g.micro` Single-AZ com 10GB, 1 ALB):
+
+| Item | Custo mensal aproximado |
+|---|---|
+| AWS Fargate (2 tasks, 0.5 vCPU / 1GB, 730h) | US$36,04 |
+| Amazon RDS for PostgreSQL (`db.t4g.micro`, 10GB) | US$13,98 |
+| Elastic Load Balancing (1 ALB) | US$16,45 |
+| NAT Gateway (taxa fixa, subnets privadas) | ~US$33,00 |
+| **Total estimado** | **~US$99,50/mês** |
+
+Esse valor não considera free tier: Fargate nunca teve cota gratuita, e RDS/ALB só têm 12 meses grátis em conta nova. O NAT Gateway é o item que mais passa despercebido nessa conta. Ele existe só para dar saída à internet para os recursos das subnets privadas (o ECS puxando imagem do ECR, por exemplo), cobra uma taxa fixa por hora independente do uso, e acaba sendo um dos itens mais caros da infra.
+
+### Observabilidade (CloudWatch, SNS)
+
+Esse custo é separado do de infraestrutura, e é bem menor:
 
 | Item | Custo aproximado |
 |---|---|
-| Métricas nativas (ECS, ALB, RDS) | Gratuitas |
+| Métricas nativas do CloudWatch (ECS, ALB, RDS) | Gratuitas |
 | Logs (ingestão + armazenamento, retenção de 14 dias) | Centavos a poucos dólares/mês |
 | Alarme (`alb_5xx`) | ~US$0,10/mês |
 | SNS (notificações por email) | Gratuito até 1000 notificações/mês |
 | Dashboard customizado | Gratuito (até 3 dashboards por conta) |
 
-Estimativa total: menos de US$5/mês.
+Somando só esses itens, a observabilidade fica abaixo de US$5/mês, e é adicional ao custo de infraestrutura, não um substituto dele.
