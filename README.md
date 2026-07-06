@@ -68,6 +68,12 @@ Senha nunca é salva em texto puro, vai hash com BCrypt. Só `/auth/register` e 
 
 O `userId` vem dentro do JWT, e cada usuário só enxerga (e só altera) as próprias transações e o próprio saldo. Isso é feito na query, não com um filtro aplicado depois de buscar tudo no banco. Quem tem papel `ADMIN` foge dessa regra e vê os dados de qualquer usuário.
 
+### Rate limiting no login
+
+`POST /auth/login` tem limite de 5 tentativas por minuto por IP (Bucket4j, token bucket), retornando 429 quando estoura. O número segue a referência do OWASP Authentication Cheat Sheet, e a chave escolhida foi o IP (via `X-Forwarded-For`, já que a API roda atrás do ALB), não o username: mais simples de implementar e já corta um brute-force na prática, ao custo de permitir que um mesmo IP tente contra usuários diferentes sem ser bloqueado por conta.
+
+O estado dos buckets fica em memória (`ConcurrentHashMap`), não em Redis. Como o ECS roda mais de uma instância atrás do ALB, isso significa que o limite é por instância: um atacante que bater em instâncias diferentes na rotação do load balancer pode, na prática, ter mais tentativas do que as 5 previstas. Pra um projeto deste tamanho o trade-off compensa, resolver isso direito exigiria um backend compartilhado (ElastiCache/Redis), que é o passo natural se o rate limiting precisar valer de forma exata entre instâncias.
+
 ## Testes
 
 Dois níveis de teste, separados por sufixo (`*Test` vs `*IT`):
