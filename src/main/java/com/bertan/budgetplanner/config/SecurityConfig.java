@@ -20,9 +20,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class SecurityConfig {
 
+    private final LoginRateLimitFilter loginRateLimitFilter;
     private final SecurityFilter securityFilter;
 
-    public SecurityConfig(SecurityFilter securityFilter) {
+    public SecurityConfig(LoginRateLimitFilter loginRateLimitFilter,
+                          SecurityFilter securityFilter) {
+        this.loginRateLimitFilter = loginRateLimitFilter;
         this.securityFilter = securityFilter;
     }
 
@@ -38,6 +41,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/health").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated())
+                .addFilterBefore(loginRateLimitFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
